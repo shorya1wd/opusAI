@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String         @id
+  email              String         @unique
+  name               String?
+  role               String         @default("member")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  organizationId     String
+  organization       Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  ownedProjects      Project[]      @relation("ProjectAdmin")
+  Projects           Project[]      @relation("ProjectMembers")
+  ownedOrganizations Organization[] @relation("OrgOwner")
+  messages           Message[]
+}
+
+model Project {
+  id             String       @id @default(uuid())
+  title          String
+  slug           String       @unique
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  adminId        String
+  admin          User         @relation("ProjectAdmin", fields: [adminId], references: [id], onDelete: Restrict)
+  members        User[]       @relation("ProjectMembers")
+  assets         Asset[]
+  documents      Document[]
+  messages       Message[]
+}
+
+model Organization {
+  id               String    @id @default(uuid())
+  name             String
+  slug             String    @unique
+  isPro            Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  ownerId          String
+  owner            User      @relation("OrgOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  users            User[]
+  projects         Project[]
+  customerId       String?   @unique
+  subscriptionId   String?   @unique
+  currentPeriodEnd DateTime?
+}
+
+model Asset {
+  id        String   @id @default(uuid())
+  name      String
+  fileType  String
+  fileSize  Int
+  publicId  String
+  url       String
+  secureUrl String
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Document {
+  id        String   @id @default(uuid())
+  title     String
+  type      String   @default("note")
+  content   String   @db.Text
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  type      String   @default("team")
+  role      String   @default("user")
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
