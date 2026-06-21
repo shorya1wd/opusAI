@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   
   compiler: {
     removeConsole: {
-      exclude: ['error'], git a
+      exclude: ['error'],
     },
   },
 
