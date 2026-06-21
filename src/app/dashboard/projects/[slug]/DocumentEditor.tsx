@@ -13,8 +13,8 @@ export default function DocumentEditor({
   initialDoc,
   projectId,
   slug,
-  currentUserId, // 👈 New prop
-  adminId,        // 👈 New prop
+  currentUserId, 
+  adminId,       
   currentUserRole
 }: {
   initialDoc: { id: string; title: string; content: string; userId: string | null } | null
@@ -30,13 +30,11 @@ export default function DocumentEditor({
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  // 🔒 Calculate Permissions
   const isCreator = initialDoc?.userId === currentUserId
   const isAdmin = currentUserId === adminId
-  const isOrgAdmin = currentUserRole === "admin" // 🚀 Add this check
+  const isOrgAdmin = currentUserRole === "admin"
   const isNewDoc = !initialDoc?.id
   
-  // 🚀 Grant access if: They created it, they are Project Admin, or they are Org Admin
   const canEdit = isCreator || isAdmin || isOrgAdmin || isNewDoc
 
   useEffect(() => {
@@ -45,7 +43,6 @@ export default function DocumentEditor({
   }, [initialDoc])
 
   const handleDownload = () => {
-    // ... exactly the same as before ...
     const element = document.createElement("a")
     const file = new Blob([content], { type: 'text/plain' })
     element.href = URL.createObjectURL(file)
@@ -56,7 +53,7 @@ export default function DocumentEditor({
   }
 
   const handleSave = async () => {
-    if (!canEdit) return // Double check on the frontend!
+    if (!canEdit) return  
     setSaving(true)
     try {
       const res = await saveDocument({
@@ -70,7 +67,7 @@ export default function DocumentEditor({
         router.push(`/dashboard/projects/${slug}?docId=${res.documentId}`)
       }
     } catch (e: any) {
-      alert(e.message) // Show the unauthorized error if they bypass UI
+      alert(e.message)
     } finally {
       setSaving(false)
     }
@@ -103,7 +100,7 @@ export default function DocumentEditor({
           <Input 
             value={title} 
             onChange={(e) => setTitle(e.target.value)}
-            readOnly={!canEdit} // 🔒 Lock title input
+            readOnly={!canEdit} 
             className={`font-semibold text-sm border-none bg-transparent focus-visible:ring-0 max-w-[300px] h-8 p-0 px-2 rounded ${!canEdit ? 'opacity-70 cursor-not-allowed' : 'focus:bg-white dark:focus:bg-slate-950'}`}
           />
           {!canEdit && <Badge variant="secondary" className=" text-[10px] h-5 gap-1"><Lock className="h-3 w-6"/> View Only</Badge>}
@@ -138,7 +135,7 @@ export default function DocumentEditor({
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          readOnly={!canEdit} // 🔒 Lock content input
+          readOnly={!canEdit} 
           placeholder={canEdit ? "Start typing your documents or notes right here..." : "This document is empty."}
           className={`w-full h-full resize-none bg-transparent outline-none border-none text-sm leading-relaxed font-sans prose dark:prose-invert max-w-none focus:ring-0 ${!canEdit ? 'opacity-80' : ''}`}
         />

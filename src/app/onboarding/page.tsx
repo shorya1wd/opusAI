@@ -25,14 +25,14 @@ export default function OnboardingPage() {
     e.preventDefault()
     setIsCreating(true)
     setCreateError("")
-    // TODO: Implement organization creation logic
+   
     try {
       const formData = new FormData(e.target as HTMLFormElement)
       formData.append('workspaceName', workspaceName)
       
       const result = await createWorkspaceAction(formData)
       if (result.success) {
-        // Redirect to dashboard or show success message
+      
         router.push("/dashboard")
         console.log('Workspace created successfully', result)
       } else {
@@ -50,7 +50,7 @@ export default function OnboardingPage() {
     e.preventDefault()
     setIsJoining(true)
     setJoinError("")
-    // TODO: Implement organization joining logic
+
     try {
       const formData = new FormData()
       formData.append('inviteCode', inviteCode)
@@ -60,7 +60,7 @@ export default function OnboardingPage() {
       if (result.error) {
         setJoinError(result.error)
       } else {
-        // 🎉 Success! Push them to the dashboard
+     
         router.push("/dashboard")
       }
     } catch (err) {
@@ -87,7 +87,6 @@ return (
               <TabsTrigger value="join">Join Existing</TabsTrigger>
             </TabsList>
 
-            {/* TAB 1: CREATE WORKSPACE */}
             <TabsContent value="create">
               <form onSubmit={createOrganization} className="space-y-4">
                 <div className="space-y-2">
@@ -125,7 +124,6 @@ return (
               </form>
             </TabsContent>
 
-            {/* TAB 2: JOIN WORKSPACE */}
             <TabsContent value="join">
               <form onSubmit={joinOrganization} className="space-y-4">
                 <div className="space-y-2">

@@ -25,18 +25,16 @@ export default function ForgotPasswordPage() {
 
   if (!signIn) return null
 
-  // Step 1: Request the password reset code
   async function requestReset(e: React.FormEvent) {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
     try {
-      // Initialize sign-in with email
+  
       await signIn?.create({
         identifier: email,
       })
-      // Send password reset code
       await signIn?.resetPasswordEmailCode.sendCode()
       setSuccessfulCreation(true)
     } catch (err: unknown) {
@@ -50,24 +48,20 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  // Step 2: Verify the code and set the new password
   async function resetPassword(e: React.FormEvent) {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
     try {
-      // Verify the code
       await signIn?.resetPasswordEmailCode.verifyCode({
         code,
       })
 
-      // Submit the new password
       await signIn?.resetPasswordEmailCode.submitPassword({
         password,
       })
       
-      // Activate the new session and redirect to the dashboard!
       await signIn?.finalize({
         navigate: ({ decorateUrl }) => {
           router.push(decorateUrl('/dashboard'))

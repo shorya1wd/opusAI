@@ -34,7 +34,7 @@ export async function createProjectAction(formData:FormData){
                 organizationId:user.organizationId!,
                 adminId:userId,
                 members: {
-                  connect: [{ id: userId }] // Instantly add the creator to the members array
+                  connect: [{ id: userId }] 
                 }
             }
         })
@@ -109,7 +109,6 @@ export async function updateProjectAction(projectId:string,formData:FormData){
   }
 }
 
-// Add this to the bottom of src/actions/project.ts
 
 export async function toggleProjectMemberAction(
   projectId: string, 
@@ -121,18 +120,15 @@ export async function toggleProjectMemberAction(
     const { userId } = await auth()
     if (!userId) return { error: "Unauthorized" }
 
-    // 1. Verify they are the admin of this specific project
     const project = await prisma.project.findUnique({ where: { id: projectId } })
     if (project?.adminId !== userId) {
       return { error: "Only the project admin can manage team access." }
     }
 
-    // 2. Prevent the admin from removing themselves
     if (action === 'remove' && targetUserId === userId) {
       return { error: "You cannot remove yourself from your own project." }
     }
 
-    // 3. Update the many-to-many relationship in Prisma
     if (action === 'add') {
       await prisma.project.update({
         where: { id: projectId },
@@ -145,7 +141,6 @@ export async function toggleProjectMemberAction(
       })
     }
 
-    // Refresh the project page to show the updated members list
     revalidatePath(`/dashboard/projects/${slug}`)
     return { success: true }
   } catch (error) {

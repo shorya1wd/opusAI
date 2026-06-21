@@ -30,7 +30,6 @@ export default function CreateProjectModal(){
 
         if(result?.error){
             alert(result.error)
-            // TODO: Show error message to user
         } else {
             setIsOpen(false)
         }

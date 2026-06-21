@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import Link from "next/link";
 import { useSignUp } from '@clerk/nextjs'
 
-// UI Components
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -17,7 +16,6 @@ export default function SignUpPage() {
   const { signUp, errors: clerkErrors, fetchStatus } = useSignUp()
   const router = useRouter()
 
-  // 1. 👇 Added state for first and last name
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [emailAddress, setEmailAddress] = useState("")
@@ -39,11 +37,10 @@ export default function SignUpPage() {
 const signUpWithGoogle = async () => {
     setIsGoogleLoading(true)
     try {
-      // 🚀 The new Core 3 method for OAuth redirects
       await signUp.sso({
         strategy: "oauth_google",
-        redirectCallbackUrl: "/sso-callback", // The processing page
-        redirectUrl: "/dashboard",            // Where to go on success
+        redirectCallbackUrl: "/sso-callback", 
+        redirectUrl: "/dashboard",          
       })
     } catch (err) {
       console.error("Google sign up failed", err)
@@ -55,7 +52,6 @@ const signUpWithGoogle = async () => {
   const signUpWithMicrosoft = async () => {
     setIsMicrosoftLoading(true)
     try {
-      // 🚀 The new Core 3 method for OAuth redirects
       await signUp.sso({
         strategy: "oauth_microsoft",
         redirectCallbackUrl: "/sso-callback",
@@ -73,7 +69,6 @@ const signUpWithGoogle = async () => {
     setGeneralError("")
 
     try {
-      // 2. 👇 Include firstName and lastName in the creation payload!
       await signUp.create({ 
         firstName,
         lastName,

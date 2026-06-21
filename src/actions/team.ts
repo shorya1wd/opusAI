@@ -46,7 +46,6 @@ export async function updateRoleAction(targetUserId: string, newRole: "admin" | 
         const { userId: requestingUserId } = await auth()
         if (!requestingUserId) return { error: "Unauthorized" }
 
-        // 1. Verify the requester is actually an admin
         const requestingUser = await prisma.user.findUnique({
             where: { id: requestingUserId }
         })
@@ -54,18 +53,15 @@ export async function updateRoleAction(targetUserId: string, newRole: "admin" | 
         if (!requestingUser) return { error: "User not found" }
         if (requestingUser.role !== "admin") return { error: "Only admins can change roles" }
         
-        // 2. Prevent admins from accidentally demoting themselves
         if (requestingUser.id === targetUserId) {
             return { error: "You cannot change your own role" }
         }
 
-        // 3. Update the Postgres database
         await prisma.user.update({
             where: { id: targetUserId },
             data: { role: newRole }
         })
 
-        // 4. Securely sync the role to Clerk's Metadata!
         const client = await clerkClient()
         await client.users.updateUserMetadata(targetUserId, {
             publicMetadata: {
@@ -73,7 +69,6 @@ export async function updateRoleAction(targetUserId: string, newRole: "admin" | 
             }
         })
 
-        // 5. Refresh the UI
         revalidatePath("/dashboard/team")
         return { success: true }
         

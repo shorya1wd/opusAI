@@ -6,7 +6,7 @@ import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 import CustomUserButton from "@/components/ui/CustomUserButton";
 import DashboardNav from "@/components/DashBoardNav";
-import MobileNav from "@/components/MobileNav"; // 🚀 Import the new mobile nav!
+import MobileNav from "@/components/MobileNav"; 
 
 export default function DashboardLayout({
   children,

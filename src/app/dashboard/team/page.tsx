@@ -3,14 +3,12 @@ import { redirect } from "next/navigation"
 import prisma from "@/lib/prisma"
 import TeamList from "./Teamlist"
 
-// 🚀 FIX: This line disables the cache so it ALWAYS fetches the newest database names!
 export const dynamic = 'force-dynamic'
 
 export default async function TeamPage() {
   const { userId } = await auth()
   if (!userId) redirect("/sign-in")
 
-  // 1. Fetch the logged-in user to find their organizationId and role
   const currentUser = await prisma.user.findUnique({
     where: { id: userId },
     select: { organizationId: true, role: true }
@@ -18,10 +16,9 @@ export default async function TeamPage() {
 
   if (!currentUser?.organizationId) redirect("/onboarding")
 
-  // 2. Fetch ALL users that share this same organizationId
   const teamMembers = await prisma.user.findMany({
     where: { organizationId: currentUser.organizationId },
-    orderBy: { role: 'asc' } // This puts 'admin' at the top of the list!
+    orderBy: { role: 'asc' } 
   })
 
   return (
@@ -33,7 +30,6 @@ export default async function TeamPage() {
         </p>
       </div>
 
-      {/* Pass the secure server data into the interactive client component */}
       <TeamList 
         members={teamMembers} 
         currentUserId={userId} 

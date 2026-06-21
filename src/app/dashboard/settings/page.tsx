@@ -7,7 +7,6 @@ export default async function SettingsPage() {
   const { userId } = await auth()
   if (!userId) redirect("/sign-in")
 
-  // Fetch the user and their organization
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: { organization: true }

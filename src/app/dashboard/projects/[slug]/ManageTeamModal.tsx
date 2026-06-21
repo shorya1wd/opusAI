@@ -47,7 +47,6 @@ export default function ManageTeamModal({
     setLoadingId(null)
   }
 
-  // Helper to format names nicely
   const getDisplayName = (name: string | null, email: string) => 
     name && name !== 'New User' ? name : email.split('@')[0]
 
@@ -97,7 +96,7 @@ export default function ManageTeamModal({
                     )}
                   </Button>
                 ) : (
-                  // If they aren't the admin, just show a badge
+                
                   isAssigned && (
                     <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full flex items-center gap-1">
                        Access Granted

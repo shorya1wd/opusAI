@@ -16,7 +16,6 @@ export default async function ProjectsPage() {
 
   if (!user?.organizationId) redirect("/onboarding")
 
-  // Fetch all projects for this workspace
   const projects = await prisma.project.findMany({
     where: { organizationId: user.organizationId },
     orderBy: { createdAt: 'desc' }
@@ -32,7 +31,6 @@ export default async function ProjectsPage() {
           </p>
         </div>
         
-        {/* Our new client component modal! */}
         <CreateProjectModal />
       </div>
 
@@ -46,7 +44,6 @@ export default async function ProjectsPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
-            // 👈 Use the new component and pass the currentUserId for permissions!
             <ProjectCard key={project.id} project={project} currentUserId={userId} currentUserRole={user.role} />
           ))}
         </div>

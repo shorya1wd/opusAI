@@ -94,7 +94,7 @@ export default function TeamChat({
               return (
                 <div key={msg.id} className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
                   <Avatar className="h-8 w-8 mt-1 shrink-0">
-                    <AvatarImage src={msg.user?.imageUrl || ""} alt={msg.user?.name || ""} />
+                    <AvatarImage src={(msg.user as any)?.imageUrl || ""} alt={msg.user?.name || ""} />
                     <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
                       {getInitials(msg.user?.name, msg.user?.email)}
                     </AvatarFallback>

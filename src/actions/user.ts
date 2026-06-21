@@ -12,7 +12,6 @@ export async function syncUserNameToDatabase(firstName: string, lastName: string
   
   console.log(`🚀 Attempting to sync name for ${userId} to: ${fullName}`)
 
-  // Instantly update the database
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: { name: fullName !== "" ? fullName : "Unknown User" }
@@ -20,7 +19,6 @@ export async function syncUserNameToDatabase(firstName: string, lastName: string
 
   console.log(`✅ Prisma update successful! New name in DB: ${updatedUser.name}`)
 
-  // Wipe the cache for the ENTIRE dashboard layout
   revalidatePath('/dashboard', 'layout')
   
   return { success: true }

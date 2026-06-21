@@ -17,8 +17,6 @@ export default function ChatCanvas({
   projectSlug: string
   initialMessages: UIMessage[]
 }) {
-  // v5: useChat no longer manages input or provides handleInputChange/handleSubmit.
-  // You own the input state and call sendMessage yourself.
   const { messages, sendMessage, status, error } = useChat({
     messages:initialMessages,
     transport: new DefaultChatTransport({ 
@@ -36,10 +34,8 @@ export default function ChatCanvas({
   const [exportingId, setExportingId] = useState<string | null>(null)
   const [exportedId, setExportedId] = useState<string | null>(null)
 
-  // v5: status is 'submitted' | 'streaming' | 'ready' | 'error'
   const isLoading = status === 'submitted' || status === 'streaming'
 
-  // Auto-scroll to bottom
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -61,7 +57,7 @@ export default function ChatCanvas({
       setExportingId(messageId)
       await createDocumentFromChat({ projectId, content, projectSlug })
       setExportedId(messageId)
-      setTimeout(() => setExportedId(null), 2000) // Clear success state after 2s
+      setTimeout(() => setExportedId(null), 2000) 
     } catch (err) {
       console.error("Failed to export document", err)
     } finally {
@@ -74,7 +70,6 @@ export default function ChatCanvas({
     submit()
   }
 
-  // Handle Enter key to submit (but Shift+Enter for new line)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -82,7 +77,6 @@ export default function ChatCanvas({
     }
   }
 
-  // v5: text lives in message.parts, not message.content
   const getMessageText = (message: UIMessage) =>
     message.parts
       .filter((part) => part.type === 'text')
@@ -193,7 +187,6 @@ export default function ChatCanvas({
             className="w-full max-h-32 min-h-[56px] resize-none bg-transparent p-4 outline-none text-sm disabled:opacity-50"
             disabled={isLoading}
             rows={1}
-            // Auto-expand height magic
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement
               target.style.height = 'auto'

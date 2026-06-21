@@ -19,7 +19,7 @@ export default function DashboardNav() {
       {navLinks.map((link) => {
         const Icon = link.icon;
         
-        // Match exactly for base dashboard, otherwise match sub-routes smoothly
+      
         const isActive = link.exact 
           ? pathname === link.href 
           : pathname.startsWith(link.href);

@@ -38,7 +38,7 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
 
     const currentUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { organizationId: true, role: true } // 🚀 Added role
+    select: { organizationId: true, role: true } 
   })
 
   if (!currentUser?.organizationId) redirect("/onboarding")
@@ -55,7 +55,7 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
     },
     include: {
       members: true, 
-      messages: { orderBy: { createdAt: 'asc' }, include: { user: true } }, // Included user here!
+      messages: { orderBy: { createdAt: 'asc' }, include: { user: true } }, 
       documents: { orderBy: { createdAt: 'desc' } }, 
       assets: { orderBy: { createdAt: 'desc' } }, 
       _count: { select: { assets: true, messages: true, documents: true } }
@@ -85,7 +85,6 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
     ? await prisma.document.findUnique({ where: { id: docId } })
     : null
 
-  // 🛡️ DATA RESCUE LOGIC: Prevents your old AI messages from disappearing!
   const aiMessages = project.messages.filter(m => m.type === 'ai' || m.role === 'assistant')
   const teamMessages = project.messages.filter(m => m.type === 'team' && m.role !== 'assistant')
 
@@ -101,12 +100,12 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
   })
   
   const assignedUserIds = project.members.map(m => m.id)
-  // 🚀 The new "Super Power" variable
+
   const hasAdminPowers = project.adminId === userId || currentUser.role === "admin"
 
   return (
     <div className="flex flex-col h-auto lg:h-[calc(100vh-8rem)]">
-      {/* 🚀 HEADER */}
+
       <div className="flex items-center justify-between pb-4 border-b mb-4 shrink-0">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
@@ -132,10 +131,8 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
         </div>
       </div>
 
-      {/* 🚀 WORKSPACE GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0 pb-10 lg:pb-0">
         
-        {/* MAIN CANVAS (Tabs for AI & Team Chat) */}
         <div className="lg:col-span-3 flex flex-col overflow-hidden h-[600px] lg:h-[calc(100vh-12rem)]">
           <Tabs defaultValue="ai" className="flex-1 flex flex-col overflow-hidden">
             <Card className="flex-1 flex flex-col shadow-sm border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -146,7 +143,6 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
                     Workspace Interface
                   </CardTitle>
                   
-                  {/* Hide tabs if they are editing a document! */}
                   {!activeDocument && action !== 'create' && (
                     <TabsList className="h-8 bg-slate-200/50 dark:bg-slate-800/50">
                       <TabsTrigger value="ai" className="text-xs flex items-center gap-1.5"><Bot className="h-3.5 w-3.5"/> AI Chat</TabsTrigger>
@@ -189,7 +185,6 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
           </Tabs>
         </div>
 
-        {/* RIGHT SIDEBAR (Assets & Documents) */}
         <div className="space-y-6 lg:overflow-y-auto lg:pr-2">
           
           <Card className="shadow-sm">
@@ -212,7 +207,6 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
                     {project.assets && project.assets.length > 0 && (
                       <div className="space-y-2 mt-4 max-h-[250px] overflow-y-auto pr-1">
                         {project.assets.map((asset) => {
-                          // 👇 Security Check: Can this user delete this specific file?
                           const canDelete = asset.userId === userId || hasAdminPowers
 
                           return (
@@ -230,7 +224,6 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
                                 </span>
                               </a>
 
-                              {/* 👇 Render the delete button if they have permission */}
                               {canDelete && (
                                 <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} />
                               )}

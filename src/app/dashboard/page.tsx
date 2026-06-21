@@ -9,7 +9,6 @@ export default async function DashboardPage() {
     redirect("/sign-in")
   }
 
-  // 1. Fetch the user and their connected organization
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: { organization: {
@@ -24,7 +23,6 @@ export default async function DashboardPage() {
     } }
   })
 
-  // 2. Security Check: If they somehow got here without a workspace, kick them back to onboarding
   if (!user?.organization) {
     redirect("/onboarding")
   }

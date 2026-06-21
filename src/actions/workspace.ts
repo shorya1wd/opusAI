@@ -6,11 +6,9 @@ import { randomBytes } from 'crypto'
 
 export async function createWorkspaceAction(formData: FormData) {
   try {
-    // 1. Verify the user is securely logged in
     const { userId } = await auth()
     if (!userId) return { error: "Unauthorized" }
 
-    // 2. Extract the data from the form
     const workspaceName = formData.get('workspaceName') as string
     if (!workspaceName) return { error: "Workspace name is required" }
 
@@ -30,11 +28,9 @@ export async function createWorkspaceAction(formData: FormData) {
       })
     }
 
-    // Generate a clean URL slug (e.g., "Nexus Studios" -> "nexus-studios")
     const slug = workspaceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-    const generatedInviteCode = randomBytes(4).toString('hex') // Generates something like "a1b2c3d4"
+    const generatedInviteCode = randomBytes(4).toString('hex') 
 
-    // 3. Create the Organization in Prisma
     const organization = await prisma.organization.create({
       data: {
         name: workspaceName,
@@ -44,7 +40,6 @@ export async function createWorkspaceAction(formData: FormData) {
       }
     })
 
-    // 4. Link the User to this new Organization and upgrade them to Admin
     await prisma.user.update({
       where: { id: userId },
       data: {
@@ -53,8 +48,6 @@ export async function createWorkspaceAction(formData: FormData) {
       }
     })
 
-    // 5. Tell Clerk to bake this new "admin" role into their session cookie!
-    // This is what makes your middleware routing work instantly.
     const client = await clerkClient()
     await client.users.updateUserMetadata(userId, {
       publicMetadata: {
@@ -81,7 +74,6 @@ export async function joinWorkspaceAction(formData: FormData) {
     const inviteCode = formData.get('inviteCode') as string
     if (!inviteCode) return { error: "Invite code is required" }
 
-    // 1. Find the workspace using the invite code
     const organization = await prisma.organization.findUnique({
       where: { inviteCode: inviteCode }
     })
@@ -90,7 +82,6 @@ export async function joinWorkspaceAction(formData: FormData) {
       return { error: "Invalid invite code. Please check and try again." }
     }
 
-    // 🛡️ SAFETY NET: In case the webhook lagged for this new user too!
     const existingUser = await prisma.user.findUnique({ where: { id: userId } })
     
     if (!existingUser) {
@@ -107,16 +98,14 @@ export async function joinWorkspaceAction(formData: FormData) {
       })
     }
 
-    // 2. Link the User to the Organization and set role to 'member'
     await prisma.user.update({
       where: { id: userId },
       data: {
         organizationId: organization.id,
-        role: 'member' // 👈 Notice this is 'member', not 'admin'!
+        role: 'member'
       }
     })
 
-    // 3. Update Clerk Session Token so middleware knows they are a member
     const client = await clerkClient()
     await client.users.updateUserMetadata(userId, {
       publicMetadata: { role: 'member' }

@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { kickMemberAction, updateRoleAction } from "@/actions/team"
 import { Button } from "@/components/ui/button"
-// 🚀 Added 'Shield' to the imports for the Make Admin button
 import { Loader2, ShieldAlert, Shield, UserMinus } from "lucide-react" 
 import {
   AlertDialog,
@@ -28,9 +27,7 @@ function getDisplayName(name: string | null, email: string) {
   if (name && name !== 'New User' && name.trim() !== '') {
     return name;
   }
-  // Extract "john.doe" from "john.doe@gmail.com"
   const emailPrefix = email.split('@')[0];
-  // Convert "john.doe" to "John Doe"
   return emailPrefix
     .split('.')
     .slice(0,2)
@@ -57,7 +54,7 @@ export default function TeamList({
     
     const result = await updateRoleAction(targetId, newRole)
     if (result?.error) {
-      alert(result.error) // Or use toast() if you have shadcn toasts installed!
+      alert(result.error)
     }
     
     setLoadingId(null)
@@ -105,10 +102,8 @@ export default function TeamList({
               <td className="px-6 py-4 text-right">
                 {currentUserRole === 'admin' && member.id !== currentUserId ? (
                   
-                  /* 🚀 Added flex container to align both buttons side-by-side on the right */
                   <div className="flex justify-end items-center gap-2">
                     
-                    {/* 🚀 The Promote/Demote Button */}
                     <Button 
                       variant="outline" 
                       size="sm"
@@ -124,7 +119,6 @@ export default function TeamList({
                       )}
                     </Button>
 
-                    {/* Existing Remove Button (AlertDialog) */}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive" size="sm" disabled={kickingId === member.id || loadingId === member.id}>

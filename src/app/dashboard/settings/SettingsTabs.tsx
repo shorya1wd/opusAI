@@ -42,7 +42,6 @@ export default function SettingsTabs({orgName, role}: SettingsTabsProps) {
     setIsSaving(true)
 
     try {
-      // 🚀 This tells Clerk to update the user object!
       await user.update({
         firstName,
         lastName,
@@ -66,30 +65,26 @@ export default function SettingsTabs({orgName, role}: SettingsTabsProps) {
         e.preventDefault()
         setIsUpdating(true)
        setUpdateSuccess(false)
-        // TODO: Update workspace name
+
         const result = await updateWorkspaceNameAction(workspaceName)
     
         if (result.error) {
             alert(result.error)
         } else {
             setUpdateSuccess(true)
-            setTimeout(() => setUpdateSuccess(false), 3000) // Hide success message after 3s
-        }
-    
-        setIsUpdating(false)
-        
+            setTimeout(() => setUpdateSuccess(false), 3000) 
+        } 
+        setIsUpdating(false)      
     }
 
     async function handleDeleteOrLeave() {
         setIsDeleting(true)
-        // TODO: Delete or leave workspace
         const result = await leaveOrDeleteWorkspaceAction()
     
         if (result.error) {
             alert(result.error)
             setIsDeleting(false)
-        } else {
-            // 🚀 BOOT THEM OUT! Force reload to clear all cached layout states
+        } else {          
             window.location.href = "/onboarding"
         }
     }
@@ -101,7 +96,6 @@ export default function SettingsTabs({orgName, role}: SettingsTabsProps) {
         <TabsTrigger value="profile">My Profile</TabsTrigger>
       </TabsList>
 
-      {/* 🏢 WORKSPACE TAB */}
       <TabsContent value="workspace" className="space-y-6">
         
         {role === 'admin' && (
@@ -126,7 +120,6 @@ export default function SettingsTabs({orgName, role}: SettingsTabsProps) {
           </Card>
         )}
 
-        {/* DANGER ZONE */}
         <Card className="border-destructive/50">
           <CardHeader>
             <CardTitle className="text-destructive flex items-center gap-2">
@@ -168,7 +161,6 @@ export default function SettingsTabs({orgName, role}: SettingsTabsProps) {
         </Card>
       </TabsContent>
 
-      {/* 👤 PROFILE TAB */}
       <TabsContent value="profile">
         <CustomSettingsBlock />
       </TabsContent>

@@ -22,7 +22,7 @@ export default function DeleteAssetButton({
       className="h-6 w-6 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors opacity-0 group-hover:opacity-100"
       disabled={isDeleting}
       onClick={async (e) => {
-        e.preventDefault() // Prevents the browser from opening the file link!
+        e.preventDefault()  
         e.stopPropagation()
         
         setIsDeleting(true)

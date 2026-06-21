@@ -4,7 +4,6 @@ import prisma from "@/lib/prisma"
 import { auth } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
 
-// 1. Action to Save Changes (or Create new)
 export async function saveDocument({
   id,
   title,
@@ -28,7 +27,6 @@ export async function saveDocument({
     let document;
 
     if (id) {
-      // 🔒 SECURITY CHECK FOR EDITING
       const existingDoc = await prisma.document.findUnique({
         where: { id },
         include: { project: true }
@@ -36,7 +34,6 @@ export async function saveDocument({
 
       if (!existingDoc) return { error: "Document not found." }
 
-      // Only the creator, project admin, or org admin can edit
       if (!isOrgAdmin && existingDoc.userId !== userId && existingDoc.project.adminId !== userId) {
         return { error: "You do not have permission to edit this document." }
       }
@@ -46,8 +43,6 @@ export async function saveDocument({
         data: { title, content }
       })
     } else {
-      // 🔒 SECURITY CHECK FOR CREATING NEW
-      // We must ensure the user is actually a member of this project before letting them add files to it!
       const project = await prisma.project.findUnique({
         where: { id: projectId },
         include: { members: true }
@@ -59,7 +54,6 @@ export async function saveDocument({
         return { error: "You must be a member of this project to create a document." }
       }
 
-      // Create new document
       document = await prisma.document.create({
         data: {
           title: title || "Untitled Document",
@@ -79,7 +73,6 @@ export async function saveDocument({
   }
 }
 
-// 2. Action to Delete a Document
 export async function deleteDocument({
   id,
   projectSlug
@@ -94,7 +87,6 @@ export async function deleteDocument({
     const currentUser = await prisma.user.findUnique({ where: { id: userId } })
     const isOrgAdmin = currentUser?.role === "admin"
 
-    // 🔒 SECURITY CHECK: Verify permissions before deleting
     const existingDoc = await prisma.document.findUnique({
       where: { id },
       include: { project: true }
@@ -119,7 +111,6 @@ export async function deleteDocument({
   }
 }
 
-// 3. Create Document from Chat
 export async function createDocumentFromChat({
   projectId,
   content,
@@ -133,11 +124,10 @@ export async function createDocumentFromChat({
     const { userId } = await auth()
     if (!userId) return { error: "Unauthorized. Please log in." }
 
-    // Generate a clean snippet from the text for a temporary title
     const cleanTitle = content
       .trim()
-      .split("\n")[0] // Take the first line
-      .replace(/[#*`]/g, "") // Strip markdown characters
+      .split("\n")[0]
+      .replace(/[#*`]/g, "")
       .substring(0, 40) || "AI Exported Note"
 
     const newDoc = await prisma.document.create({

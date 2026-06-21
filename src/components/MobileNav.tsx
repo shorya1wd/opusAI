@@ -12,7 +12,6 @@ export default function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // 🚀 The magic: whenever the pathname changes, close the sheet!
   useEffect(() => {
     setOpen(false);
   }, [pathname]);

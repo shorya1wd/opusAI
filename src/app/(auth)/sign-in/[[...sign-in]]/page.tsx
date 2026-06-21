@@ -6,32 +6,27 @@ import { useRouter } from 'next/navigation'
 import Link from "next/link";
 import { useAuth, useSignIn } from '@clerk/nextjs'
 
-// UI Components
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
-import { SiGoogle } from "react-icons/si"
 
-export default function SignInPage() { // <-- Fixed the component name!
-  // 🚀 Core 3 API: Grab signIn, structured errors, and fetchStatus
+export default function SignInPage() {
   const { signIn, errors: clerkErrors, fetchStatus } = useSignIn()
   const router = useRouter()
 
   const [emailAddress, setEmailAddress] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false) // 👈 Track Google loading state
-  const [isMicrosoftLoading, setIsMicrosoftLoading] = useState(false) // 👈 Track Microsoft loading state
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [isMicrosoftLoading, setIsMicrosoftLoading] = useState(false)
   
-  // General error fallback for network issues
   const [generalError, setGeneralError] = useState("")
 
 const { isSignedIn,isLoaded } = useAuth()
 
-  // Automatically disables buttons while Clerk is processing
   const isLoading = fetchStatus === "fetching"
 
   useEffect(() => {
@@ -46,21 +41,18 @@ const signInWithGoogle = async () => {
     setGeneralError("")
     
     try {
-      // 🚀 Extract the error from the return value
       const { error } = await signIn.sso({
         strategy: "oauth_google",
         redirectCallbackUrl: "/sso-callback",
         redirectUrl: "/dashboard",
       })
 
-      // 🚀 If an error is returned, stop the spinner and display it!
       if (error) {
         console.error("Google sign in returned an error:", error)
         setGeneralError(error.longMessage || "Failed to authenticate with Google.")
         setIsGoogleLoading(false)
       }
     } catch (err: any) {
-      // (Keep the catch block just in case of severe network failures)
       console.error("Google sign in crashed:", err)
       setGeneralError(err.errors?.[0]?.longMessage || "An unexpected error occurred.")
       setIsGoogleLoading(false) 
@@ -72,14 +64,12 @@ const signInWithGoogle = async () => {
     setGeneralError("")
     
     try {
-      // 🚀 Extract the error from the return value
       const { error } = await signIn.sso({
         strategy: "oauth_microsoft",
         redirectCallbackUrl: "/sso-callback",
         redirectUrl: "/dashboard",
       })
 
-      // 🚀 Stop the spinner and display the error
       if (error) {
         console.error("Microsoft sign in returned an error:", error)
         setGeneralError(error.longMessage || "Failed to authenticate with Microsoft.")
@@ -97,13 +87,11 @@ const signInWithGoogle = async () => {
     setGeneralError("")
 
     try {
-      // 🚀 Core 3 API: The password method is the correct modern approach!
       await signIn.password({
-        emailAddress, // Core 3 uses emailAddress instead of identifier
+        emailAddress, 
         password
       })
 
-      // In Core 3, we check the status directly on the signIn object
       if (signIn.status === "complete") {
         await signIn.finalize({
           navigate: ({ decorateUrl }) => {
@@ -111,7 +99,6 @@ const signInWithGoogle = async () => {
           }
         })
       } else {
-        // Let's print the exact status to the screen so you don't have to dig through the console
         console.log("Sign in incomplete. Status:", signIn.status)
         setGeneralError(`Wrong credentials`)
       }
@@ -123,7 +110,6 @@ const signInWithGoogle = async () => {
     }
   }
 
-  // Grab the specific field error from Clerk if it exists
   const fieldError = clerkErrors?.fields?.identifier?.message || clerkErrors?.fields?.password?.message;
   const displayError = generalError || fieldError;
   const isAnyLoading = isLoading || isGoogleLoading || isMicrosoftLoading
@@ -131,16 +117,13 @@ const signInWithGoogle = async () => {
  return (
   <main className="relative flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 overflow-hidden">
       
-      {/* 🚀 The "Professional Glow" Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-[-40%] left-[-10%] w-[70%] h-[70%] rounded-full bg-indigo-500/20 blur-[120px]" />
         <div className="absolute top-[20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-blue-500/20 blur-[120px]" />
         <div className="absolute bottom-[-20%] left-[20%] w-[50%] h-[50%] rounded-full bg-violet-500/20 blur-[120px]" />
       </div>
 
-      {/* 🚀 Your Existing Login Card */}
       <div className="relative z-10 w-full max-w-md">
-        {/* ... your Clerk <SignIn /> or existing card code here ... */}
         <Card className="w-full max-w-md shadow-xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">

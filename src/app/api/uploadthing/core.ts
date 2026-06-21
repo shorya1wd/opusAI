@@ -26,13 +26,11 @@ export const ourFileRouter = {
       return { userId, projectId: project.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      // 1. Log the exact file object to see what UploadThing sent
       console.log("=== 📦 UPLOADTHING FILE RECEIVED ===", file);
       
       try {
         await prisma.asset.create({
           data: {
-            // 2. Add safe fallbacks just in case UploadThing changes property names!
             url: file.url || (file as any).ufsUrl || "",
             name: file.name || "Untitled File",
             projectId: metadata.projectId,
@@ -46,7 +44,6 @@ export const ourFileRouter = {
         console.log("=== ✅ SAVED TO PRISMA SUCCESSFULLY ===");
         
       } catch (error) {
-        // 3. Catch the exact error so it doesn't fail silently
         console.error("=== ❌ PRISMA CRASHED ===", error);
       }
 
