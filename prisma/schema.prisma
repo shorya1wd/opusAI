@@ -19,12 +19,13 @@ model User {
   role               String         @default("member")
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
-  organizationId     String
-  organization       Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId     String?
+  organization       Organization?  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   ownedProjects      Project[]      @relation("ProjectAdmin")
-  Projects           Project[]      @relation("ProjectMembers")
+  projects           Project[]      @relation("ProjectMembers")
   ownedOrganizations Organization[] @relation("OrgOwner")
   messages           Message[]
+  assets             Asset[]
 }
 
 model Project {
@@ -57,6 +58,7 @@ model Organization {
   customerId       String?   @unique
   subscriptionId   String?   @unique
   currentPeriodEnd DateTime?
+  inviteCode       String    @unique
 }
 
 model Asset {
@@ -69,6 +71,8 @@ model Asset {
   secureUrl String
   projectId String
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -82,6 +86,8 @@ model Document {
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  userId    String?
+  @@index([projectId])
 }
 
 model Message {
