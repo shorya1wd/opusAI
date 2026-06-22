@@ -1,8 +1,4 @@
-This is a fantastic way to cap off your build. A professional `README.md` is the "storefront" of your project—it tells potential users and collaborators exactly what Opus AI is and why it matters.
 
-Here is a structured, professional `README.md` template tailored to the features we just built.
-
----
 
 # Opus AI
 
