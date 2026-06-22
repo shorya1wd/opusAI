@@ -39,6 +39,7 @@ export async function POST(req: Request) {
 
   const eventType = evt.type
 
+  // --- 1. HANDLE ACCOUNT CREATION ---
   if (eventType === 'user.created') {
     const { id, email_addresses, first_name, last_name } = evt.data
 
@@ -69,19 +70,44 @@ export async function POST(req: Request) {
       return new Response('Error saving user', { status: 500 })
     }
   }
-  if (eventType === 'user.updated') {
-      const { id, first_name, last_name } = evt.data;
-      const fullName = `${first_name || ""} ${last_name || ""}`.trim();
 
+  // --- 2. HANDLE ACCOUNT UPDATES ---
+  if (eventType === 'user.updated') {
+    const { id, first_name, last_name } = evt.data;
+    const fullName = `${first_name || ""} ${last_name || ""}`.trim();
+
+    try {
       await prisma.user.update({
         where: { id: id },
         data: { 
           name: fullName !== "" ? fullName : "Unknown User",
         }
       });
-      
       console.log(`✅ User ${id} updated in Prisma via Webhook!`);
+    } catch (error) {
+      console.error('❌ Error updating user in database:', error)
+      return new Response('Error updating user', { status: 500 })
     }
+  }
+
+  // --- 3. HANDLE ACCOUNT DELETION ---
+  if (eventType === 'user.deleted') {
+    const { id } = evt.data;
+
+    if (!id) {
+      return new Response('Error: Missing user ID', { status: 400 })
+    }
+
+    try {
+      await prisma.user.delete({
+        where: { id: id }
+      });
+      console.log(`🗑️ User ${id} deleted from Prisma via Webhook!`);
+    } catch (error) {
+      console.error('❌ Error deleting user from database:', error)
+      return new Response('Error deleting user', { status: 500 })
+    }
+  }
 
   return NextResponse.json({ message: 'Webhook processed' }, { status: 200 })
 }
