@@ -185,110 +185,92 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
           </Tabs>
         </div>
 
-        <div className="space-y-6 lg:overflow-y-auto lg:h-[calc(100vh-12rem)] lg:pr-2 pb-24">  
-  <Card className="shadow-sm">
-    <Accordion type="single" collapsible defaultValue="assets" className="w-full">
-      <AccordionItem value="assets" className="border-none">
-        <CardHeader className="py-4 border-b">
-          <AccordionTrigger className="py-0 hover:no-underline">
-            <CardTitle className="text-sm font-medium flex items-center justify-between w-full pr-4">
-              <span className="flex items-center gap-2"><Paperclip className="h-4 w-4" /> Assets</span>
-              <span className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full text-muted-foreground">
-                {project._count.assets}
-              </span>
-            </CardTitle>
-          </AccordionTrigger>
-        </CardHeader>
-        <AccordionContent>
-          <CardContent className="p-4 space-y-4">
-            <AssetDropzone slug={project.slug} />
+   <div className="space-y-6 lg:overflow-y-auto lg:h-[calc(100vh-12rem)] lg:pr-2 pb-10">  
+  
+  {/* ASSETS CARD */}
+  <Card className="shadow-sm flex flex-col border-slate-200 dark:border-slate-800">
+    <CardHeader className="py-4 border-b bg-slate-50 dark:bg-slate-900 rounded-t-lg shrink-0">
+      <CardTitle className="text-sm font-medium flex items-center justify-between w-full pr-2">
+        <span className="flex items-center gap-2"><Paperclip className="h-4 w-4 text-primary" /> Assets</span>
+        <Badge variant="secondary" className="bg-slate-200 dark:bg-slate-800">
+          {project._count.assets}
+        </Badge>
+      </CardTitle>
+    </CardHeader>
+    
+    <CardContent className="p-4 flex flex-col gap-4">
+      <AssetDropzone slug={project.slug} />
 
-            {project.assets && project.assets.length > 0 && (
-              
-              <div className="space-y-2 mt-4 max-h-[180px] overflow-y-auto pr-2 pb-2">
-                {project.assets.map((asset) => {
-                  const canDelete = asset.userId === userId || hasAdminPowers
+      {project.assets && project.assets.length > 0 && (
+        <div className="space-y-2 max-h-[220px] overflow-y-auto pr-2">
+          {project.assets.map((asset) => {
+            const canDelete = asset.userId === userId || hasAdminPowers
 
-                  return (
-                    <div key={asset.id} className="group relative flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                      
-                      <a 
-                        href={asset.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 overflow-hidden flex-1"
-                      >
-                        <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
-                        <span className="text-sm truncate font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">
-                          {asset.name}
-                        </span>
-                      </a>
+            return (
+              <div key={asset.id} className="group relative flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                <a 
+                  href={asset.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 overflow-hidden flex-1"
+                >
+                  <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm truncate font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">
+                    {asset.name}
+                  </span>
+                </a>
 
-                      {canDelete && (
-                        <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} />
-                      )}
-                      
-                    </div>
-                  )
-                })}
+                {canDelete && (
+                  <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} />
+                )}
               </div>
-            )}
-          </CardContent>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+            )
+          })}
+        </div>
+      )}
+    </CardContent>
   </Card>
 
-  <Card className="shadow-sm border-slate-200 dark:border-slate-800">
-    <Accordion type="single" collapsible defaultValue="documents" className="w-full">
-      <AccordionItem value="documents" className="border-none">
-        <CardHeader className="py-4 border-b bg-slate-50 dark:bg-slate-900 rounded-t-lg">
-          <AccordionTrigger className="py-0 hover:no-underline">
-            <div className="flex items-center justify-between w-full pr-4">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" />
-                Documents
-              </CardTitle>
-              <Badge variant="secondary" className="bg-slate-200 dark:bg-slate-800">
-                {project.documents.length}
-              </Badge>
-            </div>
-          </AccordionTrigger>
-        </CardHeader>
-        <AccordionContent>
-          <CardContent className="p-4">
-            {project.documents.length === 0 ? (
-              <div className="text-center py-6 text-sm text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50/50 dark:bg-slate-900/50">
-                No documents yet
+  {/* DOCUMENTS CARD */}
+  <Card className="shadow-sm border-slate-200 dark:border-slate-800 flex flex-col">
+    <CardHeader className="py-4 border-b bg-slate-50 dark:bg-slate-900 rounded-t-lg shrink-0">
+      <CardTitle className="text-sm font-medium flex items-center justify-between w-full pr-2">
+        <span className="flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> Documents</span>
+        <Badge variant="secondary" className="bg-slate-200 dark:bg-slate-800">
+          {project.documents.length}
+        </Badge>
+      </CardTitle>
+    </CardHeader>
+    
+    <CardContent className="p-4 flex flex-col">
+      {project.documents.length === 0 ? (
+        <div className="text-center py-6 text-sm text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50/50 dark:bg-slate-900/50">
+          No documents yet
+        </div>
+      ) : (
+        <div className="space-y-2 mb-4 max-h-[250px] overflow-y-auto pr-2">
+          {project.documents.map((doc) => (
+            <Link 
+              href={`/dashboard/projects/${slug}?docId=${doc.id}`}
+              key={doc.id} 
+              className="flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group cursor-pointer border border-transparent"
+            >
+              <div className="flex items-center gap-2 overflow-hidden">
+                <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="text-sm truncate font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary">
+                  {doc.title}
+                </span>
               </div>
-            ) : (
-              
-              <div className="space-y-2 mb-4 max-h-[200px] overflow-y-auto pr-2 pb-2">
-                {project.documents.map((doc) => (
-                  <Link 
-                    href={`/dashboard/projects/${slug}?docId=${doc.id}`}
-                    key={doc.id} 
-                    className="flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group cursor-pointer border border-transparent"
-                  >
-                    <div className="flex items-center gap-2 overflow-hidden">
-                      <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span className="text-sm truncate font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary">
-                        {doc.title}
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-            <Button variant="outline" className="w-full text-sm mt-2 border-dashed" asChild>
-              <Link href={`/dashboard/projects/${slug}?action=create`}>
-                + Create Document
-              </Link>
-            </Button>
-          </CardContent>
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+            </Link>
+          ))}
+        </div>
+      )}
+      <Button variant="outline" className="w-full text-sm mt-2 border-dashed shrink-0" asChild>
+        <Link href={`/dashboard/projects/${slug}?action=create`}>
+          + Create Document
+        </Link>
+      </Button>
+    </CardContent>
   </Card>
 </div>
       </div>
