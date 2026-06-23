@@ -75,13 +75,14 @@ export default function ManageTeamModal({
             return (
               <div key={user.id} className="flex items-center justify-between p-2 rounded-lg border bg-card">
                 <div>
-                  <p className="text-sm font-medium">{getDisplayName(user.name, user.email)}</p>
-                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                  <p className="text-sm font-medium truncate">{getDisplayName(user.name, user.email)}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                 </div>
                 
                 {/* Only show Add/Remove controls if the current viewer is the Admin */}
                 {isAdmin ? (
                   <Button
+                    className="shrink-0"
                     variant={isAssigned ? "destructive" : "secondary"}
                     size="sm"
                     onClick={() => handleToggle(user.id, isAssigned)}

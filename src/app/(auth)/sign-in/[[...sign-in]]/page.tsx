@@ -115,7 +115,7 @@ const signInWithGoogle = async () => {
   const isAnyLoading = isLoading || isGoogleLoading || isMicrosoftLoading
 
  return (
-  <main className="relative flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 overflow-hidden">
+  <main className="relative flex h-dvh min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 overflow-hidden">
       
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-[-40%] left-[-10%] w-[70%] h-[70%] rounded-full bg-indigo-500/20 blur-[120px]" />
