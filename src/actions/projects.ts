@@ -119,10 +119,12 @@ export async function toggleProjectMemberAction(
   try {
     const { userId } = await auth()
     if (!userId) return { error: "Unauthorized" }
+    const currentUser=await prisma.user.findUnique({ where: { id: userId } })
+    const isOrgAdmin = currentUser?.role === "admin"
 
     const project = await prisma.project.findUnique({ where: { id: projectId } })
-    if (project?.adminId !== userId) {
-      return { error: "Only the project admin can manage team access." }
+    if (project?.adminId !== userId && !isOrgAdmin) {
+      return { error: "Only project admins or organization admins can manage team access." }
     }
 
     if (action === 'remove' && targetUserId === userId) {

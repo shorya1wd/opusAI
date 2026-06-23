@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import prisma from "@/lib/prisma"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Paperclip, Users, Bot, FileText } from "lucide-react"
+import { ArrowLeft, Paperclip, Users, Bot, FileText, Download } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import ManageTeamModal from "./ManageTeamModal"
@@ -208,11 +208,13 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
 
             return (
               <div key={asset.id} className="group relative flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+ 
                 <a 
                   href={asset.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 overflow-hidden flex-1"
+                  title="Open in new tab"
                 >
                   <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span className="text-sm truncate font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">
@@ -220,9 +222,24 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
                   </span>
                 </a>
 
-                {canDelete && (
-                  <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} />
-                )}
+                <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+    
+                  <a 
+                    href={asset.url} 
+                    download={asset.name}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-colors"
+                    title="Download file"
+                  >             
+                   <Download className="h-4 w-4" />
+                  </a>
+
+                  {canDelete && (
+                    <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} />
+                  )}
+    
+                </div>
               </div>
             )
           })}
