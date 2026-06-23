@@ -11,6 +11,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Opus AI",
   description: "AI-powered project management tool",
+  icons: {
+    icon: "/opus-logo.png", // This explicitly forces the browser to fetch the logo
+  },
 };
 
 export const viewport: Viewport = {
