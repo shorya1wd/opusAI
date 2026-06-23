@@ -15,14 +15,17 @@ export async function createWorkspaceAction(formData: FormData) {
     const existingUser = await prisma.user.findUnique({ where: { id: userId } })
     
     if (!existingUser) {
-      console.log("Webhook delayed! Manually creating user as fallback...")
+      console.log("Webhook delayed! Safely upserting user as fallback...")
       const client = await clerkClient()
       const clerkUser = await client.users.getUser(userId)
       
-      await prisma.user.create({
-        data: {
+      // Upsert fixes the race condition. If the webhook beats us to it, it just updates nothing.
+      await prisma.user.upsert({
+        where: { id: userId },
+        update: {}, 
+        create: {
           id: userId,
-          email: clerkUser.emailAddresses[0].emailAddress,
+          email: clerkUser.emailAddresses[0]?.emailAddress || `test-${userId}@example.com`,
           name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'New User',
         }
       })
@@ -57,11 +60,14 @@ export async function createWorkspaceAction(formData: FormData) {
 
     return { success: true }
     
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Failed to create workspace:", error)
-    if (error && typeof error === 'object' && 'code' in error && (error as { code: string }).code === 'P2002') {
+    
+    // We only want to show the "name taken" error if the constraint failed explicitly on the SLUG
+    if (error?.code === 'P2002' && error?.meta?.target?.includes('slug')) {
       return { error: "That workspace name is already taken. Try another." }
     }
+    
     return { error: "An unexpected error occurred while creating your workspace." }
   }
 }
@@ -85,14 +91,16 @@ export async function joinWorkspaceAction(formData: FormData) {
     const existingUser = await prisma.user.findUnique({ where: { id: userId } })
     
     if (!existingUser) {
-      console.log("Webhook delayed! Manually creating member user...")
+      console.log("Webhook delayed! Safely upserting member user...")
       const client = await clerkClient()
       const clerkUser = await client.users.getUser(userId)
       
-      await prisma.user.create({
-        data: {
+      await prisma.user.upsert({
+        where: { id: userId },
+        update: {},
+        create: {
           id: userId,
-          email: clerkUser.emailAddresses[0].emailAddress,
+          email: clerkUser.emailAddresses[0]?.emailAddress || `test-${userId}@example.com`,
           name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'New User',
         }
       })
