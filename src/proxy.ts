@@ -18,6 +18,18 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   const authState = await auth();
+  const {userId}=await auth()
+
+  const isAuthenticated = !!userId;
+
+  if (req.nextUrl.pathname === "/") {
+    return NextResponse.redirect(
+      new URL(
+        isAuthenticated ? "/dashboard" : "/sign-in",
+        req.url
+      )
+    );
+  }
   
   if (authState.userId) {
     const currentPath = req.nextUrl.pathname;

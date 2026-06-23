@@ -185,8 +185,7 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
           </Tabs>
         </div>
 
-        <div className="space-y-6 lg:overflow-y-auto lg:pr-2">
-          
+        <div className="space-y-6 lg:overflow-y-auto lg:h-[calc(100vh-12rem)] lg:pr-2 pb-10">  
           <Card className="shadow-sm">
             <Accordion type="single" collapsible defaultValue="assets" className="w-full">
               <AccordionItem value="assets" className="border-none">
