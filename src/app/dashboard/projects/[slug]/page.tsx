@@ -63,30 +63,6 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
     }
   })
 
-  const handleDownload = async (e: React.MouseEvent, url: string, filename: string) => {
-  e.preventDefault();
-  try {
-    // Fetch the file from UploadThing
-    const response = await fetch(url);
-    const blob = await response.blob();
-    
-    // Create a temporary local link
-    const blobUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = filename;
-    
-    // Trigger the hidden download and clean up
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error("Download failed:", error);
-    window.open(url, '_blank'); // Safe fallback if fetch fails
-  }
-};
-
   if (!project) {
   return (
     <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-4">
@@ -110,7 +86,10 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
     ? await prisma.document.findUnique({ where: { id: docId } })
     : null
 
-  const aiMessages = project.messages.filter(m => m.type === 'ai' || m.role === 'assistant')
+  
+const aiMessages = project.messages.filter(m => 
+  (m.type === 'ai' || m.role === 'assistant') && m.userId === userId
+)
   const teamMessages = project.messages.filter(m => m.type === 'team' && m.role !== 'assistant')
 
   const formattedAiMessages: UIMessage[] = aiMessages.map(msg => ({

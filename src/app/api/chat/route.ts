@@ -45,7 +45,8 @@ export async function POST(req: Request) {
           content: text,
           role: 'assistant',
           projectId: projectId,
-          type: "ai"
+          type: "ai",
+          userId:userId
         },
         include: { user: true }
       })
