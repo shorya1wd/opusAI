@@ -30,23 +30,26 @@ export async function POST(req: Request) {
       projectId: projectId,
       userId: userId,
       type:"ai"
-    }
+    },
+    include: { user: true }
   })
-  await pusherServer.trigger(`project-${projectId}`, 'new-message', savedMessages)
+  await pusherServer.trigger(`project-${projectId}-ai`, 'new-message', savedMessages)
 
   const result = await streamText({
     model: openrouter('openrouter/free'), 
     system: "You are a helpful project management AI assistant. You help teams brainstorm, write code, and organize assets.",
     messages:await convertToModelMessages(messages),
     async onFinish({ text }) {
-      await prisma.message.create({
+      const savedAiMessage=await prisma.message.create({
         data: {
           content: text,
           role: 'assistant',
           projectId: projectId,
           type: "ai"
-        }
+        },
+        include: { user: true }
       })
+      await pusherServer.trigger(`project-${projectId}-ai`, 'new-message', savedAiMessage)
     }
   })
 

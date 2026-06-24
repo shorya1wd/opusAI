@@ -48,6 +48,10 @@ export default function TeamChat({
   const [chatMessages,setChatMessages]=useState(messages)
 
   useEffect(() => {
+    setChatMessages(messages)
+  }, [messages])
+
+  useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" })
     }
