@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server'
 import prisma from '@/lib/prisma'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { pusherServer } from '@/lib/pusher'
+import { pusherServer } from '@/lib/pusher-server'
 
 export const maxDuration = 30
 

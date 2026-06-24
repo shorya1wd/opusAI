@@ -7,7 +7,7 @@ import { Send, Loader2, User, Users } from "lucide-react"
 import { sendTeamMessage } from "@/actions/chat"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { pusherClient } from "@/lib/pusher"
+import { pusherClient } from "@/lib/pusher-client"
 
 type TeamMessage = {
   id: string
