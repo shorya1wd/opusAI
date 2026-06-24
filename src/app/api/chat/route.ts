@@ -4,6 +4,7 @@ import { auth } from '@clerk/nextjs/server'
 import prisma from '@/lib/prisma'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { pusherServer } from '@/lib/pusher'
 
 export const maxDuration = 30
 
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
   
   const userText = latestUserMessage.parts.find((part: any) => part.type === 'text')?.text || ""
 
-  await prisma.message.create({
+  const savedMessages=await prisma.message.create({
     data: {
       content: userText,
       role: 'user',
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
       type:"ai"
     }
   })
+  await pusherServer.trigger(`project-${projectId}`, 'new-message', savedMessages)
 
   const result = await streamText({
     model: openrouter('openrouter/free'), 

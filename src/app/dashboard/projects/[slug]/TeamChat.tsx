@@ -7,6 +7,7 @@ import { Send, Loader2, User, Users } from "lucide-react"
 import { sendTeamMessage } from "@/actions/chat"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { pusherClient } from "@/lib/pusher"
 
 type TeamMessage = {
   id: string
@@ -44,12 +45,31 @@ export default function TeamChat({
   const [content, setContent] = useState("")
   const [isSending, setIsSending] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [chatMessages,setChatMessages]=useState(messages)
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" })
     }
-  }, [messages])
+  }, [chatMessages])
+
+  useEffect(() => {
+    pusherClient.subscribe(`project-${projectId}`)
+
+    pusherClient.bind('new-message', (incomingMessage: any) => {
+      
+      setChatMessages((currentMessages) => {
+        if (currentMessages.some((msg) => msg.id === incomingMessage.id)) {
+          return currentMessages;
+        }
+        return [...currentMessages, incomingMessage];
+      })
+    })
+
+    return () => {
+      pusherClient.unsubscribe(`project-${projectId}`)
+    }
+  }, [projectId])
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -78,7 +98,7 @@ export default function TeamChat({
     <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/30">
       <ScrollArea className="flex-1 overflow-y-auto p-4 pr-6">
         <div className="space-y-6 pb-6">
-          {messages.length === 0 ? (
+          {chatMessages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground animate-in fade-in zoom-in duration-500">
               <div className="h-16 w-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6">
                 <Users className="h-8 w-8 text-blue-500" />
@@ -89,12 +109,12 @@ export default function TeamChat({
               </p>
             </div>
           ) : (
-            messages.map((msg) => {
+            chatMessages.map((msg) => {
               const isMe = msg.userId === currentUserId
               return (
                 <div key={msg.id} className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
                   <Avatar className="h-8 w-8 mt-1 shrink-0">
-                    <AvatarImage src={(msg.user as any)?.imageUrl || ""} alt={msg.user?.name || ""} />
+                    <AvatarImage src={(msg.user as unknown as { imageUrl?: string })?.imageUrl || ""} alt={msg.user?.name || ""} />
                     <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
                       {getInitials(msg.user?.name, msg.user?.email)}
                     </AvatarFallback>
