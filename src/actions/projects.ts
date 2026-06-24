@@ -131,6 +131,10 @@ export async function toggleProjectMemberAction(
       return { error: "You cannot remove yourself from your own project." }
     }
 
+    if (action === 'remove' && targetUserId === project?.adminId) {
+      return { error: "The Project Admin cannot be removed." }
+    }
+
     if (action === 'add') {
       await prisma.project.update({
         where: { id: projectId },

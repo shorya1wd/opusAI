@@ -62,6 +62,30 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
     }
   })
 
+  const handleDownload = async (e: React.MouseEvent, url: string, filename: string) => {
+  e.preventDefault();
+  try {
+    // Fetch the file from UploadThing
+    const response = await fetch(url);
+    const blob = await response.blob();
+    
+    // Create a temporary local link
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    
+    // Trigger the hidden download and clean up
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("Download failed:", error);
+    window.open(url, '_blank'); // Safe fallback if fetch fails
+  }
+};
+
   if (!project) {
   return (
     <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-4">
@@ -224,17 +248,13 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
 
                 <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
     
-                  <a 
-                    href={asset.url} 
-                    download={asset.name}
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-colors"
-                    title="Download file"
-                  >             
-                   <Download className="h-4 w-4" />
-                  </a>
-
+                  <button 
+  onClick={(e) => handleDownload(e, asset.url, asset.name)}
+  className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-colors"
+  title="Download file"
+>
+  <Download className="h-4 w-4" />
+</button>
                   {canDelete && (
                     <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} />
                   )}
