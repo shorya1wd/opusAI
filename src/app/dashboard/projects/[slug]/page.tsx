@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import TeamChat from "./TeamChat" 
 import { Lock } from "lucide-react"
 import DeleteAssetButton from "./DeleteAssetButton"
+import DownloadAssetButton from "./DownloadAssetButton"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -248,13 +249,8 @@ export default async function ProjectWorkspacePage({ params, searchParams }: Pag
 
                 <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
     
-                  <button 
-  onClick={(e) => handleDownload(e, asset.url, asset.name)}
-  className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-colors"
-  title="Download file"
->
-  <Download className="h-4 w-4" />
-</button>
+                  <DownloadAssetButton url={asset.url} name={asset.name} />
+                  
                   {canDelete && (
                     <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} />
                   )}
