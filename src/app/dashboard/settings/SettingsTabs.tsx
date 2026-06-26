@@ -34,7 +34,7 @@ export default function SettingsTabs({orgName, role}: SettingsTabsProps) {
   const [isSaving, setIsSaving] = useState(false)
 
   if (!isLoaded || !user) {
-    return <div className="animate-pulse h-64 bg-slate-100 dark:bg-slate-900 rounded-xl" />
+    return <div className="animate-pulse h-64 bg-neutral-100 dark:bg-neutral-900 rounded-xl" />
   }
 
   const handleUpdateProfile = async (e: React.FormEvent) => {

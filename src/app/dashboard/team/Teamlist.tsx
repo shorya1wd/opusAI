@@ -73,7 +73,7 @@ export default function TeamList({
   return (
     <div className="rounded-md border">
       <table className="w-full text-sm text-left">
-        <thead className="bg-slate-50 border-b dark:bg-slate-900">
+        <thead className="bg-neutral-50 border-b dark:bg-neutral-900">
           <tr>
             <th className="px-6 py-4 font-medium text-muted-foreground">Name</th>
             <th className="px-6 py-4 font-medium text-muted-foreground">Email</th>
@@ -83,7 +83,7 @@ export default function TeamList({
         </thead>
         <tbody className="divide-y">
           {members.map((member) => (
-            <tr key={member.id} className="bg-white dark:bg-slate-950">
+            <tr key={member.id} className="bg-white dark:bg-neutral-950">
               <td className="px-6 py-4 font-medium">
                 {getDisplayName(member.name, member.email)}
               </td>
@@ -94,7 +94,7 @@ export default function TeamList({
                     <ShieldAlert className="h-3 w-3" /> Admin
                   </span>
                 ) : (
-                  <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                  <span className="inline-flex items-center rounded-full bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                     Member
                   </span>
                 )}

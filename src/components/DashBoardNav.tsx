@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, FolderKanban, Users, Settings } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navLinks = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, exact: true },
@@ -16,6 +17,7 @@ export default function DashboardNav() {
 
   return (
     <nav className="flex-1 p-4 space-y-2">
+      <ThemeToggle />
       {navLinks.map((link) => {
         const Icon = link.icon;
         
@@ -30,8 +32,8 @@ export default function DashboardNav() {
             href={link.href}
             className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
               isActive
-                ? "bg-slate-200 dark:bg-slate-800 font-medium text-foreground"
-                : "text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-foreground"
+                ? "bg-neutral-200 dark:bg-neutral-800 font-medium text-foreground"
+                : "text-muted-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:text-foreground"
             }`}
           >
             <Icon className="h-5 w-5" />

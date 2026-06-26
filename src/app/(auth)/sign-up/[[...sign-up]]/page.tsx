@@ -114,7 +114,7 @@ const signUpWithGoogle = async () => {
   const isAnyLoading = loading || isGoogleLoading || isMicrosoftLoading
 
  return (
-    <main className="relative flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 overflow-hidden">
+    <main className="relative flex min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 overflow-hidden">
       
       {/* 🚀 The "Professional Glow" Background */}
       <div className="absolute inset-0 overflow-hidden">

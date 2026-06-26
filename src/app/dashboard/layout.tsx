@@ -18,7 +18,7 @@ export default function DashboardLayout({
       <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
 
       {/* ⬅️ Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 border-r bg-slate-50 dark:bg-slate-950 flex-col shrink-0">
+      <aside className="hidden md:flex w-64 border-r bg-neutral-50 dark:bg-neutral-950 flex-col shrink-0">
         <div className="h-16 flex items-center px-6 border-b font-bold text-xl tracking-tight">
           Opus AI
         </div>
@@ -29,7 +29,7 @@ export default function DashboardLayout({
       <main className="flex-1 flex flex-col min-w-0">
         
         {/* Top Header Navigation */}
-        <header className="h-16 border-b flex items-center justify-between px-4 md:px-6 bg-white dark:bg-slate-900 shrink-0">
+        <header className="h-16 border-b flex items-center justify-between px-4 md:px-6 bg-white dark:bg-neutral-900 shrink-0">
           
           {/* 📱 Mobile Header Left Side (Hamburger + Title) */}
           <div className="flex items-center gap-3 md:hidden">
@@ -49,7 +49,7 @@ export default function DashboardLayout({
         </header>
         
         {/* Actual Page Content */}
-        <div className="p-4 md:p-6 flex-1 overflow-auto bg-slate-50/50 dark:bg-slate-900">
+        <div className="p-4 md:p-6 flex-1 overflow-auto bg-neutral-50/50 dark:bg-neutral-900">
           {children}
         </div>
       </main>

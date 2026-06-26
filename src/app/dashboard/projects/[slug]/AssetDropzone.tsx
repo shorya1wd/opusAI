@@ -17,7 +17,7 @@ export default function AssetDropzone({ slug }: { slug: string }) {
 
   if (!isMounted) {
     return (
-      <div className="h-[200px] w-full border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50/50 dark:bg-slate-900/50 animate-pulse" />
+      <div className="h-[200px] w-full border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/50 animate-pulse" />
     )
   }
 
@@ -33,7 +33,7 @@ export default function AssetDropzone({ slug }: { slug: string }) {
       onUploadError={(e: UploadThingError<any>) => {
         toast.error(`Upload failed: ${e.message}`)
       }}
-      className="ut-label:text-primary ut-button:bg-primary ut-button:ut-readying:bg-primary/50 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg p-4 cursor-pointer"
+      className="ut-label:text-primary ut-button:bg-primary ut-button:ut-readying:bg-primary/50 border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-lg p-4 cursor-pointer"
     />
   )
 }
