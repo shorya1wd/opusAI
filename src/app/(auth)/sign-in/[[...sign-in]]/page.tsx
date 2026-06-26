@@ -115,7 +115,7 @@ const signInWithGoogle = async () => {
   const isAnyLoading = isLoading || isGoogleLoading || isMicrosoftLoading
 
  return (
-  <main className="relative flex h-dvh min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 overflow-hidden">
+  <main className="relative flex h-dvh min-h-screen items-center justify-center bg-neutral-50 dark:bg-neutral-950 overflow-hidden">
       
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-[-40%] left-[-10%] w-[70%] h-[70%] rounded-full bg-purple-500/20 blur-[120px]" />
@@ -178,10 +178,10 @@ const signInWithGoogle = async () => {
             </div>
             <div className="relative my-4">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                <span className="w-full border-t border-neutral-200 dark:border-neutral-800" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-slate-950 px-2 text-muted-foreground">
+                <span className="bg-white dark:bg-neutral-950 px-2 text-muted-foreground">
                   Or continue with email
                 </span>
               </div>

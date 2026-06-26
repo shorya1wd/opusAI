@@ -26,7 +26,7 @@ export default function CustomUserButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-9 w-9 rounded-full border border-slate-200 dark:border-slate-800 transition-all hover:ring-2 hover:ring-primary/20 hover:border-primary/50">
+        <Button variant="ghost" className="relative h-9 w-9 rounded-full border border-neutral-200 dark:border-neutral-800 transition-all hover:ring-2 hover:ring-primary/20 hover:border-primary/50">
           <Avatar className="h-9 w-9">
             <AvatarImage src={user.imageUrl} alt={user.fullName || ""} />
             <AvatarFallback className="bg-primary/10 text-primary font-medium">
@@ -36,7 +36,7 @@ export default function CustomUserButton() {
         </Button>
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent className="w-64 p-2 shadow-xl rounded-xl border-slate-200 dark:border-slate-800" align="end" forceMount>
+      <DropdownMenuContent className="w-64 p-2 shadow-xl rounded-xl border-neutral-200 dark:border-neutral-800" align="end" forceMount>
         <DropdownMenuLabel className="font-normal p-2">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-semibold leading-none text-foreground tracking-tight">
@@ -48,18 +48,18 @@ export default function CustomUserButton() {
           </div>
         </DropdownMenuLabel>
         
-        <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-slate-800" />
+        <DropdownMenuSeparator className="my-1 bg-neutral-100 dark:bg-neutral-800" />
         
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild className="p-2.5 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800/50 rounded-lg transition-colors">
+          <DropdownMenuItem asChild className="p-2.5 cursor-pointer focus:bg-neutral-100 dark:focus:bg-neutral-800/50 rounded-lg transition-colors">
             <Link href="/dashboard/settings" className="flex items-center w-full">
-              <Settings className="mr-2.5 h-4 w-4 text-slate-500" />
+              <Settings className="mr-2.5 h-4 w-4 text-neutral-500" />
               <span className="font-medium text-sm">Manage Account</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         
-        <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-slate-800" />
+        <DropdownMenuSeparator className="my-1 bg-neutral-100 dark:bg-neutral-800" />
         
         <DropdownMenuItem 
           className="p-2.5 cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-700 dark:text-red-500 dark:focus:bg-red-950/30 dark:focus:text-red-400 rounded-lg transition-colors"

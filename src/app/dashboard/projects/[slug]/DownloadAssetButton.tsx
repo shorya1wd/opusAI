@@ -33,7 +33,7 @@ export default function DownloadAssetButton({ url, name }: DownloadAssetButtonPr
   return (
     <button 
       onClick={handleDownload}
-      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-colors"
+      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-md transition-colors"
       title="Download file"
     >
       <Download className="h-4 w-4" />

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs'
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
 // 1. Initialize the font
 const inter = Inter({ subsets: ["latin"] });
@@ -28,6 +29,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html suppressHydrationWarning lang="en" className={cn("h-full", "antialiased")}>
       {/* 2. Add inter.className right here */}
       <body suppressHydrationWarning className={cn("min-h-full flex flex-col", inter.className)}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+
         <ClerkProvider 
           appearance={{
             elements: { logoImageUrl: "/opus-logo.png" },
@@ -37,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Toaster richColors />
         </ClerkProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

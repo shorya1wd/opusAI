@@ -35,7 +35,7 @@ export default async function ProjectsPage() {
       </div>
 
       {projects.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 border border-dashed rounded-xl bg-slate-50 dark:bg-slate-900/50">
+        <div className="flex flex-col items-center justify-center p-12 border border-dashed rounded-xl bg-neutral-50 dark:bg-neutral-900/50">
           <FolderKanban className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium">No projects yet</h3>
           <p className="text-muted-foreground mt-1 mb-4">Get started by creating your first project.</p>

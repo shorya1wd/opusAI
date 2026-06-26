@@ -139,8 +139,8 @@ const aiMessages = project.messages.filter(m =>
         
         <div className="lg:col-span-3 flex flex-col overflow-hidden h-[600px] lg:h-[calc(100vh-12rem)]">
           <Tabs defaultValue="ai" className="flex-1 flex flex-col overflow-hidden">
-            <Card className="flex-1 flex flex-col shadow-sm border-slate-200 dark:border-slate-800 overflow-hidden">
-              <CardHeader className="bg-slate-50 dark:bg-slate-900 border-b py-2 z-10 shrink-0">
+            <Card className="flex-1 flex flex-col shadow-sm border-neutral-200 dark:border-neutral-800 overflow-hidden">
+              <CardHeader className="bg-neutral-50 dark:bg-neutral-900 border-b py-2 z-10 shrink-0">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Bot className="h-4 w-4 text-primary" /> 
@@ -148,7 +148,7 @@ const aiMessages = project.messages.filter(m =>
                   </CardTitle>
                   
                   {!activeDocument && action !== 'create' && (
-                    <TabsList className="h-8 bg-slate-200/50 dark:bg-slate-800/50">
+                    <TabsList className="h-8 bg-neutral-200/50 dark:bg-neutral-800/50">
                       <TabsTrigger value="ai" className="text-xs flex items-center gap-1.5"><Bot className="h-3.5 w-3.5"/> AI Chat</TabsTrigger>
                       <TabsTrigger value="team" className="text-xs flex items-center gap-1.5"><Users className="h-3.5 w-3.5"/> Team</TabsTrigger>
                     </TabsList>
@@ -192,11 +192,11 @@ const aiMessages = project.messages.filter(m =>
    <div className="space-y-6 lg:overflow-y-auto lg:h-[calc(100vh-12rem)] lg:pr-2 pb-10">  
   
   {/* ASSETS CARD */}
-  <Card className="shadow-sm flex flex-col border-slate-200 dark:border-slate-800">
-    <CardHeader className="py-4 border-b bg-slate-50 dark:bg-slate-900 rounded-t-lg shrink-0">
+  <Card className="shadow-sm flex flex-col border-neutral-200 dark:border-neutral-800">
+    <CardHeader className="py-4 border-b bg-neutral-50 dark:bg-neutral-900 rounded-t-lg shrink-0">
       <CardTitle className="text-sm font-medium flex items-center justify-between w-full pr-2">
         <span className="flex items-center gap-2"><Paperclip className="h-4 w-4 text-primary" /> Assets</span>
-        <Badge variant="secondary" className="bg-slate-200 dark:bg-slate-800">
+        <Badge variant="secondary" className="bg-neutral-200 dark:bg-neutral-800">
           {project._count.assets}
         </Badge>
       </CardTitle>
@@ -211,7 +211,7 @@ const aiMessages = project.messages.filter(m =>
             const canDelete = asset.userId === userId || hasAdminPowers
 
             return (
-              <div key={asset.id} className="group relative flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+              <div key={asset.id} className="group relative flex items-center justify-between p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700">
  
                 <a 
                   href={asset.url} 
@@ -221,7 +221,7 @@ const aiMessages = project.messages.filter(m =>
                   title="Open in new tab"
                 >
                   <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm truncate font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">
+                  <span className="text-sm truncate font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-primary transition-colors">
                     {asset.name}
                   </span>
                 </a>
@@ -244,11 +244,11 @@ const aiMessages = project.messages.filter(m =>
   </Card>
 
   {/* DOCUMENTS CARD */}
-  <Card className="shadow-sm border-slate-200 dark:border-slate-800 flex flex-col">
-    <CardHeader className="py-4 border-b bg-slate-50 dark:bg-slate-900 rounded-t-lg shrink-0">
+  <Card className="shadow-sm border-neutral-200 dark:border-neutral-800 flex flex-col">
+    <CardHeader className="py-4 border-b bg-neutral-50 dark:bg-neutral-900 rounded-t-lg shrink-0">
       <CardTitle className="text-sm font-medium flex items-center justify-between w-full pr-2">
         <span className="flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> Documents</span>
-        <Badge variant="secondary" className="bg-slate-200 dark:bg-slate-800">
+        <Badge variant="secondary" className="bg-neutral-200 dark:bg-neutral-800">
           {project.documents.length}
         </Badge>
       </CardTitle>
@@ -256,7 +256,7 @@ const aiMessages = project.messages.filter(m =>
     
     <CardContent className="p-4 flex flex-col">
       {project.documents.length === 0 ? (
-        <div className="text-center py-6 text-sm text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="text-center py-6 text-sm text-muted-foreground border-2 border-dashed rounded-lg bg-neutral-50/50 dark:bg-neutral-900/50">
           No documents yet
         </div>
       ) : (
@@ -265,11 +265,11 @@ const aiMessages = project.messages.filter(m =>
             <Link 
               href={`/dashboard/projects/${slug}?docId=${doc.id}`}
               key={doc.id} 
-              className="flex items-center justify-between p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group cursor-pointer border border-transparent"
+              className="flex items-center justify-between p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors group cursor-pointer border border-transparent"
             >
               <div className="flex items-center gap-2 overflow-hidden">
                 <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                <span className="text-sm truncate font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary">
+                <span className="text-sm truncate font-medium text-neutral-700 dark:text-neutral-300 group-hover:text-primary">
                   {doc.title}
                 </span>
               </div>

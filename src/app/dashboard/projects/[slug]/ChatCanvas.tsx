@@ -84,7 +84,7 @@ export default function ChatCanvas({
       .join('')
 
   return (
-    <div className="flex flex-col h-full bg-slate-50/50 dark:bg-slate-900/30">
+    <div className="flex flex-col h-full bg-neutral-50/50 dark:bg-neutral-900/30">
 
       {/* 💬 CHAT HISTORY AREA */}
       <ScrollArea className="flex-1 overflow-y-auto p-4 scroll-smooth">
@@ -120,7 +120,7 @@ export default function ChatCanvas({
                   <div className={`rounded-2xl px-5 py-3.5 shadow-sm ${
                     message.role === 'user'
                       ? 'bg-primary text-primary-foreground rounded-tr-sm'
-                      : 'bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-tl-sm text-foreground'
+                      : 'bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-tl-sm text-foreground'
                   }`}>
                     <div className="prose prose-sm dark:prose-invert max-w-none wrap-break-word whitespace-pre-wrap leading-relaxed pr-6">
                       {getMessageText(message)}
@@ -133,7 +133,7 @@ export default function ChatCanvas({
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7 bg-white/90 dark:bg-slate-900/90 backdrop-blur border shadow-sm hover:bg-slate-100 dark:hover:bg-slate-800 text-muted-foreground hover:text-foreground"
+                        className="h-7 w-7 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border shadow-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground hover:text-foreground"
                         onClick={() => handleExport(message.id, getMessageText(message))}
                         disabled={exportingId === message.id}
                         title="Convert to workspace document"
@@ -152,8 +152,8 @@ export default function ChatCanvas({
 
                 {/* User Avatar */}
                 {message.role === 'user' && (
-                  <div className="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-1">
-                    <User className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                  <div className="h-8 w-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center shrink-0 mt-1">
+                    <User className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                   </div>
                 )}
               </div>
@@ -174,10 +174,10 @@ export default function ChatCanvas({
       </ScrollArea>
 
       {/* ✍️ INPUT AREA */}
-      <div className="p-4 bg-white/50 dark:bg-slate-950/50 backdrop-blur-md border-t">
+      <div className="p-4 bg-white/50 dark:bg-neutral-950/50 backdrop-blur-md border-t">
         <form
           onSubmit={handleFormSubmit}
-          className="relative max-w-4xl mx-auto flex items-end gap-2 bg-white dark:bg-slate-950 border shadow-sm rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-primary/50 transition-all"
+          className="relative max-w-4xl mx-auto flex items-end gap-2 bg-white dark:bg-neutral-950 border shadow-sm rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-primary/50 transition-all"
         >
           <textarea
             value={input}

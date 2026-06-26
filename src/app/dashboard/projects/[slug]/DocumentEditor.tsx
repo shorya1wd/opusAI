@@ -89,8 +89,8 @@ export default function DocumentEditor({
   }
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-950 animate-in fade-in duration-200">
-      <div className="flex items-center justify-between p-3 border-b shrink-0 bg-slate-50 dark:bg-slate-900">
+    <div className="flex flex-col h-full bg-white dark:bg-neutral-950 animate-in fade-in duration-200">
+      <div className="flex items-center justify-between p-3 border-b shrink-0 bg-neutral-50 dark:bg-neutral-900">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" asChild className="h-8 w-8">
             <Link href={`/dashboard/projects/${slug}`}>
@@ -101,7 +101,7 @@ export default function DocumentEditor({
             value={title} 
             onChange={(e) => setTitle(e.target.value)}
             readOnly={!canEdit} 
-            className={`font-semibold text-sm border-none bg-transparent focus-visible:ring-0 max-w-[300px] h-8 p-0 px-2 rounded ${!canEdit ? 'opacity-70 cursor-not-allowed' : 'focus:bg-white dark:focus:bg-slate-950'}`}
+            className={`font-semibold text-sm border-none bg-transparent focus-visible:ring-0 max-w-[300px] h-8 p-0 px-2 rounded ${!canEdit ? 'opacity-70 cursor-not-allowed' : 'focus:bg-white dark:focus:bg-neutral-950'}`}
           />
           {!canEdit && <Badge variant="secondary" className=" text-[10px] h-5 gap-1"><Lock className="h-3 w-6"/> View Only</Badge>}
         </div>
