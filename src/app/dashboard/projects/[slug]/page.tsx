@@ -167,7 +167,7 @@ const aiMessages = project.messages.filter(m =>
                   />
                 ) : (
                   <>
-                    <TabsContent value="ai" className="m-0 h-full data-[state=inactive]:hidden border-none outline-none">
+                    <TabsContent value="ai" forceMount className="m-0 h-full data-[state=inactive]:hidden border-none outline-none">
                       <ChatCanvas 
                         projectId={project.id} 
                         projectSlug={project.slug}
