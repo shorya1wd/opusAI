@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       # 2. This is a pre-built action that securely handles the SSH connection
       - name: Connect and Deploy via SSH
@@ -24,12 +24,14 @@ jobs:
             # 3. Navigate to your project folder 
             # ⚠️ IMPORTANT: Change '~/opus-ai' to wherever your project actually lives on the server!
             cd /root/opusAI
-            
+
             # 4. Pull the latest code from GitHub
-            git pull origin main
-            
+            git fetch origin main
+            git reset --hard origin/main
+
             # 5. Rebuild and restart the Docker containers without downtime
-            docker compose up -d --build
-            
+            docker compose build --no-cache
+            docker compose up -d
+
             # 6. Housekeeping: Delete old Docker images so your Droplet doesn't run out of storage over time
             docker image prune -f
