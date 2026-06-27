@@ -17,7 +17,7 @@ COPY . .
 # Generate Prisma Client and build the Next.js app
 # It will automatically read your .env file during the build
 RUN npx prisma generate
-RUN npm run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # 3. Production image, copy all the files and run next
 FROM base AS runner
