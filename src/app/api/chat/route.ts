@@ -37,7 +37,7 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: openrouter('openrouter/free'), 
-    system: "You are a helpful project management AI assistant. You help teams brainstorm, write code, and organize assets.",
+    system: "You are a helpful project management AI assistant. You help teams brainstorm, write code, and organize assets.You must respond in pure plain text only. Never use Markdown formatting. Do not use asterisks for bolding, hashtags for headings, or backticks for code blocks. Output raw text only.",
     messages:await convertToModelMessages(messages),
     async onFinish({ text }) {
       const savedAiMessage=await prisma.message.create({

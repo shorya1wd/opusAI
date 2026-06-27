@@ -7,6 +7,8 @@ import { Bot, User, Send, Loader2, Sparkles, AlertCircle ,FilePlus,Check} from "
 import { useEffect, useRef, useState } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { createDocumentFromChat } from "@/actions/documents"
+import { useRouter } from "next/navigation"
+import ReactMarkdown from 'react-markdown'
 
 export default function ChatCanvas({ 
   projectId ,
@@ -17,6 +19,7 @@ export default function ChatCanvas({
   projectSlug: string
   initialMessages: UIMessage[]
 }) {
+  const router = useRouter()
   const { messages, sendMessage, status, error } = useChat({
     messages:initialMessages,
     transport: new DefaultChatTransport({ 
@@ -27,7 +30,9 @@ export default function ChatCanvas({
         }
       }
     }),
-    
+    onFinish: () => {
+      router.refresh()
+    }
   })
 
   const [input, setInput] = useState('')
@@ -123,7 +128,9 @@ export default function ChatCanvas({
                       : 'bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-tl-sm text-foreground'
                   }`}>
                     <div className="prose prose-sm dark:prose-invert max-w-none wrap-break-word whitespace-pre-wrap leading-relaxed pr-6">
-                      {getMessageText(message)}
+                       <ReactMarkdown>
+                        {getMessageText(message)}
+                      </ReactMarkdown>
                     </div>
                   </div>
 

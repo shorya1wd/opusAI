@@ -11,6 +11,22 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { ZxcvbnFactory } from '@zxcvbn-ts/core';
+import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
+import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
+
+// 1. Initialize zxcvbn outside the component so it only loads once
+const options = {
+  dictionary: {
+    ...zxcvbnCommonPackage.dictionary,
+    ...zxcvbnEnPackage.dictionary,
+  },
+  graphs: zxcvbnCommonPackage.adjacencyGraphs,
+  translations: zxcvbnEnPackage.translations,
+};
+
+// Create the active instance
+const zxcvbn = new ZxcvbnFactory(options);
 
 export default function SignUpPage() {
   const { signUp, errors: clerkErrors, fetchStatus } = useSignUp()
@@ -23,7 +39,8 @@ export default function SignUpPage() {
   const [pendingVerification, setPendingVerification] = useState(false)
   const [code, setCode] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  
+  const [passwordScore, setPasswordScore] = useState(0)
+  const [passwordFeedback, setPasswordFeedback] = useState("")
   const [generalError, setGeneralError] = useState("")
   const isLoading = fetchStatus === "fetching"
   const [loading, setLoading] = useState(false)
@@ -34,6 +51,20 @@ export default function SignUpPage() {
     return null
   }
 
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setPassword(val);
+     
+    if (val) {
+      const result = zxcvbn.check(val);
+      setPasswordScore(result.score);
+      // zxcvbn provides exact reasons why a password is bad!
+      setPasswordFeedback(result.feedback.warning || result.feedback.suggestions[0] || "");
+    } else {
+      setPasswordScore(0);
+      setPasswordFeedback("");
+    }
+  };
 const signUpWithGoogle = async () => {
     setIsGoogleLoading(true)
     try {
@@ -67,6 +98,34 @@ const signUpWithGoogle = async () => {
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setGeneralError("")
+        if (password.length < 8) {
+      setGeneralError("Password must be at least 8 characters long.")
+      return 
+    }
+    if (passwordScore < 3) {
+      setGeneralError("Please choose a stronger password.");
+      return; 
+    }
+    try {
+      setLoading(true); // Optional: if you want to show a spinner during the check
+      
+      const checkRes = await fetch('/api/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailAddress })
+      });
+      
+      const checkData = await checkRes.json();
+      
+      if (checkData.exists) {
+        setGeneralError("This email is already registered. Please sign in instead.");
+        setLoading(false);
+        return; // 🛑 Stop the sign-up completely!
+      }
+    } catch (err) {
+      console.error("Failed to pre-check email", err);
+      // If the check fails, we can optionally just let them proceed and let Clerk handle it
+    }
 
     try {
       await signUp.create({ 
@@ -224,7 +283,7 @@ const signUpWithGoogle = async () => {
                     type={showPassword ? "text" : "password"}
                     id="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                     required
                   />
                   <button
@@ -240,6 +299,36 @@ const signUpWithGoogle = async () => {
                   </button>
                 </div>
               </div>
+               {password.length > 0 && (
+    <div className="space-y-1 mt-2">
+      <div className="flex gap-1 h-1.5 w-full rounded-full overflow-hidden bg-neutral-200 dark:bg-neutral-800">
+        {[0, 1, 2, 3].map((index) => (
+          <div
+            key={index}
+            className={`h-full flex-1 transition-all duration-300 ${
+              passwordScore > index 
+                ? passwordScore < 2 
+                  ? 'bg-red-500' 
+                  : passwordScore === 2 
+                    ? 'bg-yellow-500' 
+                    : 'bg-green-500'
+                : 'bg-transparent'
+            }`}
+          />
+        ))}
+      </div>
+      <div className="flex justify-between items-center text-xs">
+        <span className={`${
+          passwordScore < 2 ? 'text-red-500' : passwordScore === 2 ? 'text-yellow-500' : 'text-green-500'
+        }`}>
+          {passwordScore < 2 ? 'Weak' : passwordScore === 2 ? 'Fair' : passwordScore === 3 ? 'Good' : 'Strong'}
+        </span>
+        {passwordFeedback && (
+          <span className="text-muted-foreground">{passwordFeedback}</span>
+        )}
+      </div>
+    </div>
+  )}
 
               {displayError && (
                 <Alert variant="destructive">
