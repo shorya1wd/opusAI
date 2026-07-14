@@ -66,33 +66,33 @@ const techStack = [
 const features = [
   {
     icon: "🤖",
-    title: "AI-Powered Intelligence",
-    desc: "Leverage multiple frontier models — Gemini, GPT, Groq — directly inside your workflow. Summarize tasks, generate subtasks, and get smart suggestions in real time.",
+    title: "AI-Powered Chat",
+    desc: "Every project has a built-in AI chat powered by OpenRouter — giving the team access to capable AI models to brainstorm, write, debug, and think through problems together.",
+  },
+  {
+    icon: "✨",
+    title: "Streaming AI Responses",
+    desc: "AI replies stream in token-by-token in real time — you see the response as it is being generated, not after it is fully done. Powered by the Vercel AI SDK streaming pipeline.",
   },
   {
     icon: "📋",
-    title: "Project Management",
-    desc: "Organize work with kanban boards, task assignments, priorities, and deadlines — all in one unified workspace built for modern teams.",
+    title: "Project & Document Management",
+    desc: "Create projects, write and store documents, upload assets, and keep everything organized — all inside one workspace your whole team can access.",
   },
   {
     icon: "👥",
-    title: "Team Collaboration",
-    desc: "Invite teammates, assign roles, and collaborate in real time with Pusher-powered live updates. No lag, no page refreshes.",
+    title: "Real-Time Team Chat",
+    desc: "Built-in team messaging powered by Pusher WebSockets. Messages appear instantly for every team member — no polling, no delays, no refresh needed.",
   },
   {
     icon: "🔒",
-    title: "Enterprise-Grade Auth",
-    desc: "Powered by Clerk — SSO, OAuth, MFA, and session management handled securely, so you can focus on shipping rather than auth.",
-  },
-  {
-    icon: "⚡",
-    title: "Blazing Performance",
-    desc: "Built on Next.js 16 with React 19's concurrent features, server components, and edge-ready streaming for sub-100ms UI responses.",
+    title: "Auth via Clerk",
+    desc: "Sign-in, sign-up, SSO, and session management are all handled by Clerk. Secure by default, with support for social login and email/password out of the box.",
   },
   {
     icon: "🎯",
-    title: "Context-Aware AI Chat",
-    desc: "Chat with an AI that knows your project context — files, tasks, team — and gives advice that is actually relevant to what you are building.",
+    title: "Project-Aware AI Context",
+    desc: "The AI assistant knows your project — its name, team members, documents, and assets — so it can give you answers that are actually relevant to what you are working on.",
   },
 ];
 
@@ -281,22 +281,59 @@ export default function AboutOpusAI() {
           think smarter, and ship more.
         </p>
 
-        {/* Stats row */}
+        {/* Built by — prominent, in the hero where everyone sees it */}
+        <a
+          href="https://shoryabhushan.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fade-up inline-flex items-center gap-3 mt-6 px-5 py-2.5 rounded-full border border-neutral-200 dark:border-neutral-700 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-sm hover:border-violet-400/60 hover:bg-violet-50/50 dark:hover:bg-violet-950/30 transition-all duration-300 group"
+        >
+          <div className="w-7 h-7 rounded-full gradient-animate flex items-center justify-center text-xs font-black text-white shrink-0">
+            S
+          </div>
+          <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            Built by{" "}
+            <span className="font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+              Shorya Bhushan
+            </span>
+          </span>
+          <svg className="w-3.5 h-3.5 text-neutral-400 group-hover:text-violet-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+
+        {/* Stats row — real data from Lighthouse audit on opusai.online */}
         <div className="flex flex-wrap justify-center gap-10 mt-14 fade-up">
-          {[
-            { label: "AI Models Integrated", value: 6, suffix: "+" },
-            { label: "Real-time Events", value: 100, suffix: "ms" },
-            { label: "Tech Packages", value: 40, suffix: "+" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-4xl font-black shimmer-text">
-                <Counter target={stat.value} suffix={stat.suffix} />
-              </div>
-              <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 font-medium">
-                {stat.label}
-              </div>
+          <div className="text-center">
+            <div className="text-4xl font-black shimmer-text">0.7s</div>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 font-medium">
+              Page Load (LCP)
             </div>
-          ))}
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-black shimmer-text">
+              <Counter target={99} suffix="/100" />
+            </div>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 font-medium">
+              Lighthouse Score
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-black shimmer-text">
+              <Counter target={32000} suffix="+" />
+            </div>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 font-medium">
+              Lines of Code
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-4xl font-black shimmer-text">
+              <Counter target={100} suffix="%" />
+            </div>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 font-medium">
+              TypeScript
+            </div>
+          </div>
         </div>
       </section>
 
