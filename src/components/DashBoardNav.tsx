@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FolderKanban, Users, Settings } from "lucide-react";
+import { LayoutDashboard, FolderKanban, Users, Settings, Info } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const navLinks = [
@@ -10,6 +10,7 @@ const navLinks = [
   { name: "Projects", href: "/dashboard/projects", icon: FolderKanban },
   { name: "Team", href: "/dashboard/team", icon: Users },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "About", href: "/dashboard/about", icon: Info },
 ];
 
 export default function DashboardNav() {
