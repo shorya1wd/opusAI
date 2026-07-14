@@ -2,6 +2,9 @@
 
 ### Your Intelligent Workspace for Collaborative Project Management
 
+![OpusAI Dashboard Screenshot](./public/screenshot.png)
+<!-- 📸 Note: Replace the image path above with an actual screenshot of your app to make the portfolio pop! -->
+
 Opus AI is a full-stack SaaS platform designed to streamline project management, team collaboration, and AI-assisted documentation. Built with a focus on privacy, role-based security, real-time communication, and high performance.
 
 ---
@@ -44,7 +47,7 @@ Opus AI is a full-stack SaaS platform designed to streamline project management,
 
 1. Clone the repository:
 ```bash
-git clone [https://github.com/shorya1wd/opusAI.git](https://github.com/shorya1wd/opusAI.git)
+git clone https://github.com/shorya1wd/opusAI.git
 cd opus-ai
 
 ```
