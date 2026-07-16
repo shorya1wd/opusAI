@@ -28,7 +28,8 @@ type ProjectCardProps = {
 export default function ProjectCard({ project, currentUserId, currentUserRole }: ProjectCardProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false)
+  const [isDeleteSubmitting, setIsDeleteSubmitting] = useState(false)
 
   
 
@@ -36,21 +37,26 @@ export default function ProjectCard({ project, currentUserId, currentUserRole }:
 
   async function handleEdit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setIsSubmitting(true)
+    setIsEditSubmitting(true)
     const formData = new FormData(e.currentTarget)
     const result = await updateProjectAction(project.id, formData)
-    
     if (result.error) toast.error(result.error)
-    else setIsEditDialogOpen(false)
-    setIsSubmitting(false)
+    else {
+      toast.success("Project updated!")
+      setIsEditDialogOpen(false)
+    }
+    setIsEditSubmitting(false)
   }
 
   async function handleDelete() {
-    setIsSubmitting(true)
+    setIsDeleteSubmitting(true)
     const result = await deleteProjectAction(project.id)
-    if (result.error) toast.error(result.error)
-    setIsSubmitting(false)
-    setIsDeleteDialogOpen(false)
+    if (result.error) {
+      toast.error(result.error)
+    } else {
+      setIsDeleteDialogOpen(false)
+    }
+    setIsDeleteSubmitting(false)
   }
 
   return (
@@ -71,10 +77,10 @@ export default function ProjectCard({ project, currentUserId, currentUserRole }:
 
         {/* ⚙️ Only show the menu if the current user created this project */}
         {isOwnerOrAdmin && (
-          <div className="absolute top-4 right-2">
+          <div className="absolute top-3 right-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -100,11 +106,12 @@ export default function ProjectCard({ project, currentUserId, currentUserRole }:
           <form onSubmit={handleEdit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Project Title</Label>
-              <Input id="title" name="title" defaultValue={project.title} required />
+              <Input id="title" name="title" defaultValue={project.title} required autoFocus />
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save Changes
+              <Button type="submit" disabled={isEditSubmitting}>
+                {isEditSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {isEditSubmitting ? "Saving..." : "Save Changes"}
               </Button>
             </DialogFooter>
           </form>
@@ -121,9 +128,9 @@ export default function ProjectCard({ project, currentUserId, currentUserRole }:
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90" disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Delete Project"}
+            <AlertDialogCancel disabled={isDeleteSubmitting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90" disabled={isDeleteSubmitting}>
+              {isDeleteSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Delete Project"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

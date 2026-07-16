@@ -231,7 +231,7 @@ const aiMessages = project.messages.filter(m =>
                   <DownloadAssetButton url={asset.url} name={asset.name} />
                   
                   {canDelete && (
-                    <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} />
+                    <DeleteAssetButton assetId={asset.id} projectSlug={project.slug} fileName={asset.name} />
                   )}
     
                 </div>

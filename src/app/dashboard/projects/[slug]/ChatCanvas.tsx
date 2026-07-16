@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { createDocumentFromChat } from "@/actions/documents"
 import { useRouter } from "next/navigation"
 import ReactMarkdown from 'react-markdown'
+import { toast } from "sonner"
 
 export default function ChatCanvas({ 
   projectId,
@@ -77,6 +78,7 @@ export default function ChatCanvas({
       setTimeout(() => setExportedId(null), 2000) 
     } catch (err) {
       console.error("Failed to export document", err)
+      toast.error("Failed to save as document. Please try again.")
     } finally {
       setExportingId(null)
     }
