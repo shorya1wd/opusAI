@@ -46,6 +46,16 @@ export async function leaveOrDeleteWorkspaceAction() {
     const client = await clerkClient()
 
     if (user.role === 'admin') {
+      // Must clear the owner's organizationId FIRST.
+      // The schema has Organization.owner → User with onDelete:Restrict,
+      // so Postgres blocks the delete while the owner still references the org.
+      await prisma.user.update({
+        where: { id: userId },
+        data: { organizationId: null, role: 'member' }
+      })
+
+      // Now all cascade rules can fire cleanly:
+      // Organization delete → cascades to Project → cascades to Asset, Document, Message
       await prisma.organization.delete({
         where: { id: user.organizationId }
       })

@@ -27,11 +27,15 @@ export async function createProjectAction(formData:FormData){
             return{error:"User not found"}
         }
 
+        if (!user.organizationId) {
+            return { error: "You must be part of an organization to create a project." }
+        }
+
         await prisma.project.create({
             data:{
                 title:name.trim(),
                 slug:uniqueSlug,
-                organizationId:user.organizationId!,
+                organizationId:user.organizationId,
                 adminId:userId,
                 members: {
                   connect: [{ id: userId }] 
