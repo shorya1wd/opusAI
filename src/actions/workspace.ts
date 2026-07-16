@@ -18,17 +18,29 @@ export async function createWorkspaceAction(formData: FormData) {
       console.log("Webhook delayed! Safely upserting user as fallback...")
       const client = await clerkClient()
       const clerkUser = await client.users.getUser(userId)
-      
-      // Upsert fixes the race condition. If the webhook beats us to it, it just updates nothing.
-      await prisma.user.upsert({
-        where: { id: userId },
-        update: {}, 
-        create: {
-          id: userId,
-          email: clerkUser.emailAddresses[0]?.emailAddress || `test-${userId}@example.com`,
-          name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'New User',
+      const email = clerkUser.emailAddresses[0]?.emailAddress || `test-${userId}@example.com`
+      const name = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'New User'
+
+      try {
+        // Try upsert by id first — if webhook already created the user, this just updates nothing.
+        await prisma.user.upsert({
+          where: { id: userId },
+          update: {},
+          create: { id: userId, email, name }
+        })
+      } catch (upsertErr: any) {
+        // P2002 on email means a record with this email already exists (webhook beat us with a diff id).
+        // Find that record and patch the id so downstream lookups work.
+        if (upsertErr?.code === 'P2002') {
+          console.log("Email conflict — patching existing user record with correct Clerk id...")
+          const userByEmail = await prisma.user.findUnique({ where: { email } })
+          if (userByEmail && userByEmail.id !== userId) {
+            await prisma.user.update({ where: { email }, data: { id: userId } })
+          }
+        } else {
+          throw upsertErr
         }
-      })
+      }
     }
 
     const slug = workspaceName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -63,9 +75,11 @@ export async function createWorkspaceAction(formData: FormData) {
   } catch (error: any) {
     console.error("Failed to create workspace:", error)
     
-    // We only want to show the "name taken" error if the constraint failed explicitly on the SLUG
     if (error?.code === 'P2002' && error?.meta?.target?.includes('slug')) {
       return { error: "That workspace name is already taken. Try another." }
+    }
+    if (error?.code === 'P2002' && error?.meta?.target?.includes('email')) {
+      return { error: "An account with that email already exists. Please try again." }
     }
     
     return { error: "An unexpected error occurred while creating your workspace." }
@@ -94,16 +108,26 @@ export async function joinWorkspaceAction(formData: FormData) {
       console.log("Webhook delayed! Safely upserting member user...")
       const client = await clerkClient()
       const clerkUser = await client.users.getUser(userId)
-      
-      await prisma.user.upsert({
-        where: { id: userId },
-        update: {},
-        create: {
-          id: userId,
-          email: clerkUser.emailAddresses[0]?.emailAddress || `test-${userId}@example.com`,
-          name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'New User',
+      const email = clerkUser.emailAddresses[0]?.emailAddress || `test-${userId}@example.com`
+      const name = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'New User'
+
+      try {
+        await prisma.user.upsert({
+          where: { id: userId },
+          update: {},
+          create: { id: userId, email, name }
+        })
+      } catch (upsertErr: any) {
+        if (upsertErr?.code === 'P2002') {
+          console.log("Email conflict on join — patching existing user record...")
+          const userByEmail = await prisma.user.findUnique({ where: { email } })
+          if (userByEmail && userByEmail.id !== userId) {
+            await prisma.user.update({ where: { email }, data: { id: userId } })
+          }
+        } else {
+          throw upsertErr
         }
-      })
+      }
     }
 
     await prisma.user.update({

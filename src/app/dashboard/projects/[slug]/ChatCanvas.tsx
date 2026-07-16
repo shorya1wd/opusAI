@@ -3,7 +3,7 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import type { UIMessage } from 'ai'
 import { Button } from "@/components/ui/button"
-import { Bot, User, Send, Loader2, Sparkles, AlertCircle ,FilePlus,Check} from "lucide-react"
+import { Bot, User, Send, Loader2, Sparkles, AlertCircle, FilePlus, Check, FileText, Users, Trash2, PenLine, Eye } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { createDocumentFromChat } from "@/actions/documents"
@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation"
 import ReactMarkdown from 'react-markdown'
 
 export default function ChatCanvas({ 
-  projectId ,
+  projectId,
   projectSlug,
   initialMessages
 }: { 
@@ -20,18 +20,28 @@ export default function ChatCanvas({
   initialMessages: UIMessage[]
 }) {
   const router = useRouter()
+
+  // Simple lock: true from the moment user sends until AI fully finishes (onFinish/onError).
+  // This is more reliable than checking status/messages because multi-step tool calls
+  // briefly add intermediate assistant messages that would wrongly unlock the input.
+  const [isLocked, setIsLocked] = useState(false)
+
   const { messages, sendMessage, status, error } = useChat({
-    messages:initialMessages,
+    messages: initialMessages,
     transport: new DefaultChatTransport({ 
       api: '/api/chat',
       prepareSendMessagesRequest: ({ messages }) => {
         return {
-          body: { messages, projectId } 
+          body: { messages, projectId, projectSlug } 
         }
       }
     }),
     onFinish: () => {
+      setIsLocked(false)
       router.refresh()
+    },
+    onError: () => {
+      setIsLocked(false)
     }
   })
 
@@ -39,7 +49,8 @@ export default function ChatCanvas({
   const [exportingId, setExportingId] = useState<string | null>(null)
   const [exportedId, setExportedId] = useState<string | null>(null)
 
-  const isLoading = status === 'submitted' || status === 'streaming'
+  // isLoading: show spinner on send button while streaming
+  const isLoading = isLocked || status === 'submitted' || status === 'streaming'
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollToBottom = () => {
@@ -52,7 +63,8 @@ export default function ChatCanvas({
 
   const submit = () => {
     const text = input.trim()
-    if (!text || isLoading) return
+    if (!text || isLocked) return
+    setIsLocked(true)   // Lock immediately — unlocks in onFinish or onError
     sendMessage({ text })
     setInput('')
   }
@@ -85,8 +97,22 @@ export default function ChatCanvas({
   const getMessageText = (message: UIMessage) =>
     message.parts
       .filter((part) => part.type === 'text')
-      .map((part) => part.text)
+      .map((part) => (part as any).text as string)
       .join('')
+
+  // Returns tool invocation parts from a message
+  const getToolInvocations = (message: UIMessage) =>
+    message.parts.filter((part) => part.type === 'tool-invocation') as any[]
+
+  // Human-readable tool labels and icons
+  const toolMeta: Record<string, { label: string; icon: React.ReactNode }> = {
+    create_document: { label: 'Creating document', icon: <FileText className="h-3.5 w-3.5" /> },
+    edit_document:   { label: 'Editing document',  icon: <PenLine  className="h-3.5 w-3.5" /> },
+    delete_document: { label: 'Deleting document', icon: <Trash2   className="h-3.5 w-3.5" /> },
+    read_asset:      { label: 'Reading file',      icon: <Eye      className="h-3.5 w-3.5" /> },
+    add_member:      { label: 'Adding member',     icon: <Users    className="h-3.5 w-3.5" /> },
+    remove_member:   { label: 'Removing member',   icon: <Users    className="h-3.5 w-3.5" /> },
+  }
 
   return (
     <div className="flex flex-col h-full bg-neutral-50/50 dark:bg-neutral-900/30">
@@ -101,70 +127,116 @@ export default function ChatCanvas({
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">Project AI Assistant</h3>
               <p className="max-w-md text-center text-sm">
-                I can help you brainstorm ideas, analyze uploaded documents, or write code for this project. What would you like to do?
+                Ask me to create documents, read files, manage team members, or anything else for this project.
               </p>
             </div>
           ) : (
-            messages.map((message: UIMessage) => (
-              <div
-                key={message.id}
-                className={`flex gap-4 animate-in fade-in slide-in-from-bottom-2 ${
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                }`}
-              >
-                {/* AI Avatar */}
-                {message.role === 'assistant' && (
-                  <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 mt-1">
-                    <Bot className="h-4 w-4 text-primary" />
-                  </div>
-                )}
+            messages.map((message: UIMessage, index: number) => {
+              const text = getMessageText(message)
+              const toolInvocations = getToolInvocations(message)
+              const isLastMessage = index === messages.length - 1
+              
+              // Hide assistant messages that have zero content (shouldn't happen, but safety net)
+              if (message.role === 'assistant' && !text.trim() && toolInvocations.length === 0) return null
 
-                {/* 👇 1. THIS IS THE FIX: A local wrapper container for the button anchor */}
-                <div className="relative max-w-[85%] group">
-                  {/* Message Bubble */}
-                  <div className={`rounded-2xl px-5 py-3.5 shadow-sm ${
-                    message.role === 'user'
-                      ? 'bg-primary text-primary-foreground rounded-tr-sm'
-                      : 'bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-tl-sm text-foreground'
-                  }`}>
-                    <div className="prose prose-sm dark:prose-invert max-w-none wrap-break-word whitespace-pre-wrap leading-relaxed pr-6">
-                       <ReactMarkdown>
-                        {getMessageText(message)}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-
-                  {/* 👇 2. The Export button is now nested perfectly context-aware */}
+              return (
+                <div
+                  key={message.id}
+                  className={`flex gap-4 animate-in fade-in slide-in-from-bottom-2 ${
+                    message.role === 'user' ? 'justify-end' : 'justify-start'
+                  }`}
+                >
+                  {/* AI Avatar */}
                   {message.role === 'assistant' && (
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border shadow-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleExport(message.id, getMessageText(message))}
-                        disabled={exportingId === message.id}
-                        title="Convert to workspace document"
-                      >
-                        {exportedId === message.id ? (
-                          <Check className="h-3.5 w-3.5 text-green-500" />
-                        ) : exportingId === message.id ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <FilePlus className="h-3.5 w-3.5" />
-                        )}
-                      </Button>
+                    <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 mt-1">
+                      <Bot className="h-4 w-4 text-primary" />
+                    </div>
+                  )}
+
+                  <div className="relative max-w-[85%] group flex flex-col gap-2">
+
+                    {/* Tool activity pills — shown for each tool call in this message */}
+                    {toolInvocations.map((inv: any, i: number) => {
+                      const meta = toolMeta[inv.toolName] ?? { label: inv.toolName, icon: <Sparkles className="h-3.5 w-3.5" /> }
+                      const isDone = inv.state === 'result'
+                      return (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg border text-xs text-muted-foreground bg-white dark:bg-neutral-950 border-neutral-200 dark:border-neutral-800 w-fit"
+                        >
+                          {isDone
+                            ? <Check className="h-3.5 w-3.5 text-green-500" />
+                            : <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                          }
+                          {meta.icon}
+                          <span>{meta.label}{isDone ? ' — done' : '...'}</span>
+                        </div>
+                      )
+                    })}
+
+                    {/* Text bubble — only shown if there is text */}
+                    {text.trim() && (
+                      <div className={`rounded-2xl px-5 py-3.5 shadow-sm ${
+                        message.role === 'user'
+                          ? 'bg-primary text-primary-foreground rounded-tr-sm'
+                          : 'bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-tl-sm text-foreground'
+                      }`}>
+                        <div className="prose prose-sm dark:prose-invert max-w-none wrap-break-word whitespace-pre-wrap leading-relaxed pr-6">
+                          <ReactMarkdown>
+                            {text}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Export button — only for assistant text messages */}
+                    {message.role === 'assistant' && text.trim() && (
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border shadow-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 text-muted-foreground hover:text-foreground"
+                          onClick={() => handleExport(message.id, text)}
+                          disabled={exportingId === message.id}
+                          title="Convert to workspace document"
+                        >
+                          {exportedId === message.id ? (
+                            <Check className="h-3.5 w-3.5 text-green-500" />
+                          ) : exportingId === message.id ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <FilePlus className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* User Avatar */}
+                  {message.role === 'user' && (
+                    <div className="h-8 w-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center shrink-0 mt-1">
+                      <User className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                     </div>
                   )}
                 </div>
+              )
+            })
+          )}
 
-                {/* User Avatar */}
-                {message.role === 'user' && (
-                  <div className="h-8 w-8 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center shrink-0 mt-1">
-                    <User className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
-                  </div>
-                )}
+          {/* Typing indicator — shown while waiting for first tokens from AI */}
+          {isLocked && messages[messages.length - 1]?.role === 'user' && (
+            <div className="flex gap-4 animate-in fade-in slide-in-from-bottom-2">
+              <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 mt-1">
+                <Bot className="h-4 w-4 text-primary" />
               </div>
-            ))
+              <div className="rounded-2xl px-5 py-4 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-tl-sm">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-primary/60 animate-bounce [animation-delay:0ms]" />
+                  <span className="h-2 w-2 rounded-full bg-primary/60 animate-bounce [animation-delay:150ms]" />
+                  <span className="h-2 w-2 rounded-full bg-primary/60 animate-bounce [animation-delay:300ms]" />
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Error Message Display */}
