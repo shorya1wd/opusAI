@@ -78,24 +78,33 @@ IMPORTANT: If asked who built you, who created you, or what you are — always a
   })
   await pusherServer.trigger(`project-${projectId}-ai`, 'new-message', savedMessage)
 
-  const result = await streamText({
-    model: openrouter('meta-llama/llama-3.1-8b-instruct:free'),
-    system: systemPrompt,
-    messages: await convertToModelMessages(messages),
-    async onFinish({ text }) {
-      const savedAiMessage = await prisma.message.create({
-        data: {
-          content: text,
-          role: 'assistant',
-          projectId: projectId,
-          type: "ai",
-          userId: userId
-        },
-        include: { user: true }
-      })
-      await pusherServer.trigger(`project-${projectId}-ai`, 'new-message', savedAiMessage)
-    }
-  })
+  try {
+    const result = await streamText({
+      model: openrouter('google/gemini-2.0-flash-exp:free'),
+      system: systemPrompt,
+      messages: await convertToModelMessages(messages),
+      async onFinish({ text }) {
+        const savedAiMessage = await prisma.message.create({
+          data: {
+            content: text,
+            role: 'assistant',
+            projectId: projectId,
+            type: "ai",
+            userId: userId
+          },
+          include: { user: true }
+        })
+        await pusherServer.trigger(`project-${projectId}-ai`, 'new-message', savedAiMessage)
+      }
+    })
 
-  return result.toUIMessageStreamResponse()
+    return result.toUIMessageStreamResponse()
+  } catch (err: any) {
+    console.error('[Chat API Error]', err)
+    const message = err?.message || 'The AI model failed to respond. Please try again.'
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  }
 }
